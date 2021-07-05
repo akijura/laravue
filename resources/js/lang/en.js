@@ -198,4 +198,12 @@ export default {
       visitor: 'Visitor. Have access to static pages, should not have any writable permission',
     },
   },
+  main_status: {
+    'active': 'Active',
+    'nonActive': 'nonActive',
+    'statusName': 'Status Name',
+    'statusDesc': 'Status Description',
+    'status': 'Status',
+    'text_dialog': 'Create new basic status',
+  },
 };
