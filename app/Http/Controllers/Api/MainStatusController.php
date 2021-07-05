@@ -37,24 +37,10 @@ class MainStatusController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response|ResourceCollection
      */
-    public function index(Request $request)
+    public function index()
     {
-        $searchParams = $request->all();
-        $userQuery = User::query();
-        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
-        $role = Arr::get($searchParams, 'role', '');
-        $keyword = Arr::get($searchParams, 'keyword', '');
-
-        if (!empty($role)) {
-            $userQuery->whereHas('roles', function($q) use ($role) { $q->where('name', $role); });
-        }
-
-        if (!empty($keyword)) {
-            $userQuery->where('name', 'LIKE', '%' . $keyword . '%');
-            $userQuery->orWhere('email', 'LIKE', '%' . $keyword . '%');
-        }
-
-        return UserResource::collection($userQuery->paginate($limit));
+        $main_statuses = MainStatus::all();
+        return response()->json(new JsonResponse(['main_statuses' => $main_statuses]));
     }
 
     /**

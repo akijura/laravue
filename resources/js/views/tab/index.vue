@@ -4,10 +4,10 @@
       {{ $t('table.add') }}
     </span>
     <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" />
-    <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
-      <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
+    <el-tabs v-model="activeName" v-loading="loading" style="margin-top:15px;" type="border-card">
+      <el-tab-pane v-for="item in listMainStatus" :key="item.id" :label="item.name" :name="item.id">
         <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key" @create="showCreatedTimes" />
+          <tab-pane v-if="activeName==item.id" :type="item.id" />
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -61,7 +61,7 @@ export default {
         { label: 'China', key: 'CN' },
         { label: 'Eurozone', key: 'EU' },
       ],
-      activeName: 'VI',
+      activeName: '', // here you have to put first main status id from database
       createdTimes: 0,
       dialogFormVisible: false,
       userCreating: false,
@@ -71,6 +71,8 @@ export default {
         mainStatusDescription: '',
         mainStatusActive: 1,
       },
+      loading: false,
+      listMainStatus: [],
       statusCreating: false,
       rules: {
         mainStatusName: [{ required: true, message: 'Status name is required', trigger: 'blur' }],
@@ -78,9 +80,20 @@ export default {
       },
     };
   },
+  created() {
+    this.getList();
+  },
   methods: {
     showCreatedTimes() {
       this.createdTimes = this.createdTimes + 1;
+    },
+    async getList() {
+      this.loading = true;
+      const { data } = await mainStatusResource.list();
+
+      this.listMainStatus = data.main_statuses;
+      this.activeName = data.main_statuses[0].id;
+      this.loading = false;
     },
     handleCreate() {
       this.dialogFormVisible = true;
@@ -116,6 +129,7 @@ export default {
           console.log('error submit!!');
           return false;
         }
+        this.getList();
       });
     },
     resetNewMainStatus() {
