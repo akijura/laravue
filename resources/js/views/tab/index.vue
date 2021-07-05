@@ -1,6 +1,8 @@
 <template>
   <div class="tab-container">
-    <el-tag>mounted times ：{{ createdTimes }}</el-tag>
+    <span class="pan-btn light-blue-btn" style="width:100px;height:40px;display:inline-block;vertical-align: middle;margin-left:5px;">
+      {{ $t('table.add') }}
+    </span>
     <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" />
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">

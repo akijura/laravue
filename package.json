@@ -47,11 +47,12 @@
     "sass-loader": "^8.0.0",
     "script-loader": "^0.7.2",
     "svg-sprite-loader": "^4.3.0",
-    "vue-template-compiler": "2.6.10",
+    "vue-template-compiler": "^2.6.10",
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-chunk-rename-plugin": "^1.0.3",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-laravel-mix-manifest": "^3.0.5"
   },
   "dependencies": {
     "axios": "^0.19",
