@@ -205,5 +205,6 @@ export default {
     'statusDesc': 'Status Description',
     'status': 'Status',
     'text_dialog': 'Create new basic status',
+    'text_dialog_status': 'Create new status for the basic type',
   },
 };
