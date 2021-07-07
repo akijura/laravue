@@ -3,7 +3,6 @@
     <span class="pan-btn light-blue-btn" @click="handleCreate">
       {{ $t('table.add') }}
     </span>
-    <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" />
     <el-tabs v-model="activeName" v-loading="loading" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in listMainStatus" :key="item.id" :label="item.name" :name="item.id">
         <keep-alive>
@@ -55,14 +54,7 @@ export default {
   components: { TabPane },
   data() {
     return {
-      tabMapOptions: [
-        { label: 'USA', key: 'US' },
-        { label: 'Vietnam', key: 'VI' },
-        { label: 'China', key: 'CN' },
-        { label: 'Eurozone', key: 'EU' },
-      ],
-      activeName: '', // here you have to put first main status id from database
-      createdTimes: 0,
+      activeName: '',
       dialogFormVisible: false,
       userCreating: false,
       active: 1,
@@ -84,9 +76,6 @@ export default {
     this.getList();
   },
   methods: {
-    showCreatedTimes() {
-      this.createdTimes = this.createdTimes + 1;
-    },
     async getList() {
       this.loading = true;
       const { data } = await mainStatusResource.list();

@@ -37,10 +37,22 @@ class StatusController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response|ResourceCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        $main_statuses = MainStatus::all();
-        return response()->json(new JsonResponse(['main_statuses' => $main_statuses]));
+        $searchParams = $request->all();
+        $statuses = Status::where('main_status_id', 'LIKE', $searchParams[0])->get();
+        $data = [];
+        foreach ($statuses as $status) {
+            $row = [
+                'id' => $status['id'],
+                'name' => $status['name'],
+                'description' => $status['description'],
+                'status' => $status['status'],
+            ];
+    
+            $data[] = $row;
+        }
+        return response()->json(new JsonResponse( $data));
     }
 
     /**
@@ -98,38 +110,31 @@ class StatusController extends BaseController
      * @param User    $user
      * @return UserResource|\Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, Status $status)
     {
-        if ($user === null) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        if ($user->isAdmin()) {
-            return response()->json(['error' => 'Admin can not be modified'], 403);
-        }
-
-        $currentUser = Auth::user();
-        if (!$currentUser->isAdmin()
-            && $currentUser->id !== $user->id
-            && !$currentUser->hasPermission(\App\Laravue\Acl::PERMISSION_USER_MANAGE)
-        ) {
-            return response()->json(['error' => 'Permission denied'], 403);
-        }
-
-        $validator = Validator::make($request->all(), $this->getValidationRules(false));
+        if ($status === null) {
+            return response()->json(['error' => 'Status not found'], 404);
+        }  
+        $validator = Validator::make(
+            $request->all(),
+            array_merge(
+                [
+                    'editName' => ['required', 'max:50'],
+                    'editMainStatusId' => ['required'],
+                ]
+            )
+        );
+   
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            $email = $request->get('email');
-            $found = User::where('email', $email)->first();
-            if ($found && $found->id !== $user->id) {
-                return response()->json(['error' => 'Email has been taken'], 403);
-            }
-
-            $user->name = $request->get('name');
-            $user->email = $email;
-            $user->save();
-            return new UserResource($user);
-        }
+            $params = $request->all();
+            $status->name = $params['editName'];
+            $status->description = $params['editMainStatusId'];
+            $status->status = $params['editActive'];
+            $status->save();
+            return $status;
+        }      
     }
 
     /**
@@ -170,14 +175,10 @@ class StatusController extends BaseController
      * @param  User $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(Status $status)
     {
-        if ($user->isAdmin()) {
-            return response()->json(['error' => 'Ehhh! Can not delete admin user'], 403);
-        }
-
         try {
-            $user->delete();
+            $status->delete();
         } catch (\Exception $ex) {
             return response()->json(['error' => $ex->getMessage()], 403);
         }

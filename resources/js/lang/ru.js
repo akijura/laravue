@@ -206,5 +206,10 @@ export default {
     'status': 'Статус',
     'text_dialog': 'Создать новый базовый статус',
     'text_dialog_status': 'Создать новый статус для базового типа',
+    'created_at': 'Дата создания',
+    'id': 'Номер',
+    'actions': 'Действия',
+    'text_dialog_status_edit': 'Изменить статус',
+    'update': 'Изменить',
   },
 };
