@@ -206,5 +206,10 @@ export default {
     'status': 'Status',
     'text_dialog': 'Create new basic status',
     'text_dialog_status': 'Create new status for the basic type',
+    'created_at': 'Created Date',
+    'id': 'ID',
+    'actions': 'Actions',
+    'text_dialog_status_edit': 'Edit status',
+    'update': 'Update',
   },
 };
