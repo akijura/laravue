@@ -232,5 +232,5 @@ export default {
     'period': 'Период проекта',
     'projectExecutors': 'Исполнители проекта',
     'projectComment': 'Комментарий к проекту',
-  }
+  },
 };

@@ -35,7 +35,7 @@
       </el-col>
       <el-col :span="6">
         <div class="board-column-header-working">
-         {{ $t('projects.working') }}
+          {{ $t('projects.working') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
           <div class="component-item-project">
@@ -52,7 +52,7 @@
       </el-col>
       <el-col :span="6">
         <div class="board-column-header-done">
-         {{ $t('projects.done') }}
+          {{ $t('projects.done') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
           <div class="component-item-project">
@@ -70,7 +70,7 @@
         </div>
 
       </el-col>
-            <el-col :span="6">
+      <el-col :span="6">
         <div class="board-column-header-cancelled">
           {{ $t('projects.cancelled') }}
         </div>
@@ -91,7 +91,7 @@
 
       </el-col>
     </el-row>
-      <el-dialog :title="$t('projects.text_dialog')" :visible.sync="dialogFormVisible" >
+    <el-dialog :title="$t('projects.text_dialog')" :visible.sync="dialogFormVisible">
       <div v-loading="loadingCreateProject" class="form-container">
         <el-form ref="createProjectForm" :model="createProjectForm" label-position="left" label-width="150px" style="max-width: 800px;" :rules="rules">
           <el-form-item :label="$t('projects.projectName')" prop="projectName">
@@ -100,36 +100,39 @@
           <el-form-item :label="$t('projects.projectDescription')" type="textarea" prop="projectDescription">
             <el-input v-model="createProjectForm.projectDescription" />
           </el-form-item>
-         <el-form-item :label="$t('projects.period')" type="textarea" prop="projectBeginDate">
-        <el-col :span="11">
-          <el-date-picker v-model="createProjectForm.projectBeginDate" type="date" :placeholder="$t('projects.projectBeginDate')" style="width: 100%;" />
-        </el-col>
-        <el-col :span="2" class="line">
-          -
-        </el-col>
-        <el-col :span="11">
-           <el-date-picker v-model="createProjectForm.projectEndDate" type="date" :placeholder="$t('projects.projectEndDate')" style="width: 100%;" format="yyyy-MM-dd"/>
-        </el-col>
-      </el-form-item>
-      <el-form-item  :label="$t('projects.projectExecutors')" type="textarea" prop="projectExecutors">
-          <el-select v-model="createProjectForm.projectExecutors"  style="width: 100%;"
+          <el-form-item :label="$t('projects.period')" type="textarea" prop="projectBeginDate">
+            <el-col :span="11">
+              <el-date-picker v-model="createProjectForm.projectBeginDate" type="date" :placeholder="$t('projects.projectBeginDate')" style="width: 100%;" />
+            </el-col>
+            <el-col :span="2" class="line">
+              -
+            </el-col>
+            <el-col :span="11">
+              <el-date-picker v-model="createProjectForm.projectEndDate" type="date" :placeholder="$t('projects.projectEndDate')" style="width: 100%;" format="yyyy-MM-dd" />
+            </el-col>
+          </el-form-item>
+          <el-form-item :label="$t('projects.projectExecutors')" type="textarea" prop="projectExecutors">
+            <el-select
+              v-model="createProjectForm.projectExecutors"
+              style="width: 100%;"
               multiple
               filterable
               class="filter-item"
               placeholder="Please select servers"
-              required >
+              required
+            >
               <el-option v-for="user in userList" :key="user.id" :value="user.id" :label="user.name" class="filter-item" />
-          </el-select>
-       </el-form-item>
-         <el-form-item :label="$t('main_status.statusName')" type="textarea" prop="projectTypeStatus">
-           <el-select v-model="createProjectForm.projectTypeStatus" placeholder="please select" style="width: 100%;">
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('main_status.statusName')" type="textarea" prop="projectTypeStatus">
+            <el-select v-model="createProjectForm.projectTypeStatus" placeholder="please select" style="width: 100%;">
               <el-option v-for="status in listMainStatus" :key="status.id" :value="status.id" :label="status.name" class="filter-item" />
-          </el-select>
-      </el-form-item>
-      <el-form-item :label="$t('projects.projectComment')">
-        <el-input v-model="createProjectForm.projectComment" type="textarea" />
-      </el-form-item>
-      <el-form-item :label="$t('main_status.status')">
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('projects.projectComment')">
+            <el-input v-model="createProjectForm.projectComment" type="textarea" />
+          </el-form-item>
+          <el-form-item :label="$t('main_status.status')">
             <el-radio-group v-model="createProjectForm.projectStatusActive" style="padding: 10px;">
               <el-radio :label="1">
                 {{ $t('main_status.active') }}
@@ -145,7 +148,7 @@
             {{ $t('table.cancel') }}
           </el-button>
 
-          <el-button type="primary"  @click="createProject()">
+          <el-button type="primary" @click="createProject()">
             {{ $t('table.confirm') }}
           </el-button>
         </div>
@@ -186,7 +189,7 @@ export default {
       dialogFormVisible: false,
       loadingCreateProject: false,
       userList: [],
-      listMainStatus:'',
+      listMainStatus: '',
       createProjectForm: {
         projectName: '',
         projectDescription: '',
@@ -198,7 +201,7 @@ export default {
         projectComment: '',
 
       },
-            rules: {
+      rules: {
         projectName: [{ required: true, message: 'Project name is required', trigger: 'blur' }],
         projectDescription: [{ required: true, message: 'Project description is required', trigger: 'blur' }],
         projectBeginDate: [{ required: true, message: 'Project pariod is required', trigger: 'blur' }],
@@ -227,7 +230,7 @@ export default {
     };
   },
   methods: {
-        handleCreate() {
+    handleCreate() {
       this.dialogFormVisible = true;
       this.loadingCreateProject = true;
       this.getListUsers();
@@ -237,25 +240,23 @@ export default {
       });
       this.loadingCreateProject = false;
     },
-      async getListUsers() {
+    async getListUsers() {
       const { data } = await userResource.list();
       this.userList = data;
-     console.log(this.userList);
+      console.log(this.userList);
     },
-      async getListStatus() {
+    async getListStatus() {
       const { data } = await mainStatusResource.list();
       this.listMainStatus = data.main_statuses;
-
     },
     createProject() {
       this.$refs['createProjectForm'].validate((valid) => {
         if (valid) {
-        
           this.loadingCreateProject = true;
           projectResource
             .store(this.createProjectForm)
             .then(response => {
-                console.log(response);
+              console.log(response);
               this.$message({
                 message: 'New project ' + this.createProjectForm.projectName + ' has been created successfully.',
                 type: 'success',
@@ -274,7 +275,7 @@ export default {
         }
       });
     },
-  }
+  },
 };
 </script>
 <style scoped>

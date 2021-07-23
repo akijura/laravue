@@ -67,14 +67,14 @@
           <el-form-item :label="$t('main_status.statusQueue')" type="textarea" prop="statusQueue">
             <el-select v-model="createForm.statusQueue" placeholder="please select" style="width: 100%;">
               <el-option v-for="status in list" :key="status.queue" :value="status.queue" :label="$t('main_status.after')+ ' ' + status.name" class="filter-item" />
-          </el-select>
+            </el-select>
           </el-form-item>
           <el-form-item :label="$t('main_status.basicStatus')" type="textarea" prop="basicStatus">
-           <el-select v-model="createForm.basicStatus" placeholder="please select" style="width: 100%;">
+            <el-select v-model="createForm.basicStatus" placeholder="please select" style="width: 100%;">
               <el-option v-for="basic in basicStatusList" :key="basic.id" :value="basic.id" :label="$t('projects.' + basic.basic_status_name)" class="filter-item" />
-          </el-select>
-      </el-form-item>
-                <el-form-item :label="$t('main_status.status')">
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('main_status.status')">
             <el-radio-group v-model="createForm.statusActive" style="padding: 10px;">
               <el-radio :label="1">
                 {{ $t('main_status.active') }}
@@ -108,13 +108,13 @@
           <el-form-item :label="$t('main_status.statusQueue')" type="textarea" prop="statusQueue">
             <el-select v-model="editForm.editStatusQueue" placeholder="please select" style="width: 100%;">
               <el-option v-for="status in list" :key="status.id" :value="status.queue" :label="$t('main_status.after' ) + ' ' + status.name" class="filter-item" />
-          </el-select>
+            </el-select>
           </el-form-item>
           <el-form-item :label="$t('main_status.basicStatus')" type="textarea" prop="basicStatus">
-           <el-select v-model="editForm.editBasicStatus" placeholder="please select" style="width: 100%;">
+            <el-select v-model="editForm.editBasicStatus" placeholder="please select" style="width: 100%;">
               <el-option v-for="basic in basicStatusList" :key="basic.id" :value="basic.id" :label="$t('projects.' + basic.basic_status_name)" class="filter-item" />
-          </el-select>
-      </el-form-item>
+            </el-select>
+          </el-form-item>
           <el-form-item :label="$t('main_status.status')">
 
             <el-radio-group v-model="editForm.editActive" style="padding: 10px;">
@@ -223,10 +223,10 @@ export default {
         this.$refs['statusForm'].clearValidate();
       });
     },
-          async getListBasicStatus() {
+    async getListBasicStatus() {
       const { data } = await basicStatusResource.list();
       this.basicStatusList = data.basic_statuses;
-     console.log(this.basicStatusList);
+      console.log(this.basicStatusList);
     },
     createMainStatus() {
       this.$refs['statusForm'].validate((valid) => {
@@ -264,35 +264,33 @@ export default {
       this.statusEdit = true;
       this.getListBasicStatus();
       const found = this.list.find(list => list.id === id);
-      if(found.queue == 1)
-      {
-        const findQueue = 1;   
+      if (found.queue == 1) {
+        const findQueue = 1;
         this.editForm = {
-        editId: found.id,
-        editName: found.name,
-        editDescription: found.description,
-        editActive: found.status,
-        editMainStatusId: this.type,
-        editBasicStatus: found.basic_status_id,
-        editStatusQueue: '',
-        queueName: '',
-        currentQueue: found.queue,
-      };
-      }
-      else {
+          editId: found.id,
+          editName: found.name,
+          editDescription: found.description,
+          editActive: found.status,
+          editMainStatusId: this.type,
+          editBasicStatus: found.basic_status_id,
+          editStatusQueue: '',
+          queueName: '',
+          currentQueue: found.queue,
+        };
+      } else {
         const findQueue = found.queue - 1;
-         const foundAfter = this.list.find(list => list.queue === findQueue);
+        const foundAfter = this.list.find(list => list.queue === findQueue);
         this.editForm = {
-        editId: found.id,
-        editName: found.name,
-        editDescription: found.description,
-        editActive: found.status,
-        editMainStatusId: this.type,
-        editStatusQueue: foundAfter.queue,
-        editBasicStatus: found.basic_status_id,
-        queueName: foundAfter.name,
-        currentQueue: found.queue,
-      };
+          editId: found.id,
+          editName: found.name,
+          editDescription: found.description,
+          editActive: found.status,
+          editMainStatusId: this.type,
+          editStatusQueue: foundAfter.queue,
+          editBasicStatus: found.basic_status_id,
+          queueName: foundAfter.name,
+          currentQueue: found.queue,
+        };
       }
 
       this.$nextTick(() => {
