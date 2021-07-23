@@ -15,6 +15,7 @@ class Resource {
     });
   }
   get(id) {
+    console.log(id);
     return request({
       url: '/' + this.uri + '/' + id,
       method: 'get',

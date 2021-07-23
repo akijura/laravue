@@ -88,9 +88,9 @@ class BasicStatusController extends BaseController
      * @param  User $user
      * @return UserResource|\Illuminate\Http\JsonResponse
      */
-    public function show(User $user)
+    public function show($id)
     {
-        return new UserResource($user);
+        return "here";
     }
 
     /**
