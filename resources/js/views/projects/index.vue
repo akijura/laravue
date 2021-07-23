@@ -159,12 +159,7 @@
 </template>
 
 <script>
-import PanThumb from '@/components/PanThumb';
-import MdInput from '@/components/MDinput';
-import Mallki from '@/components/TextHoverEffect/Mallki';
-import DropdownMenu from '@/components/Share/DropdownMenu';
 import waves from '@/directive/waves/index.js'; // v-wave directive
-import Kanban from '@/components/Kanban';
 import UserResource from '@/api/user';
 import MainStatusResource from '@/api/main_status';
 import ProjectResource from '@/api/project';
@@ -174,13 +169,6 @@ const userResource = new UserResource();
 const projectResource = new ProjectResource();
 export default {
   name: 'ComponentMixinDemo',
-  components: {
-    PanThumb,
-    MdInput,
-    Mallki,
-    DropdownMenu,
-    Kanban,
-  },
   directives: {
     waves,
   },

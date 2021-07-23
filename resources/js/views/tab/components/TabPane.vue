@@ -226,7 +226,6 @@ export default {
     async getListBasicStatus() {
       const { data } = await basicStatusResource.list();
       this.basicStatusList = data.basic_statuses;
-
     },
     async getCurrentListBasicStatus(id) {
       const { data } = await StatusResourceConst.get(id);
@@ -239,7 +238,6 @@ export default {
           StatusResourceConst
             .store(this.createForm)
             .then(response => {
-            
               this.$message({
                 message: 'New status ' + this.createForm.statusName + ' has been created successfully.',
                 type: 'success',
@@ -264,14 +262,12 @@ export default {
       });
     },
     handleEditStatus(id) {
-    
       this.dialogEditFormVisible = true;
       this.statusEdit = true;
       this.getListBasicStatus();
       this.getCurrentListBasicStatus(id);
       const found = this.list.find(list => list.id === id);
-      if (found.queue == 1) {
-        const findQueue = 1;
+      if (found.queue === 1) {
         this.editForm = {
           editId: found.id,
           editName: found.name,
@@ -303,7 +299,6 @@ export default {
         this.$refs['statusEditForm'].clearValidate();
       });
       this.statusEdit = false;
-     
     },
     updateStatus() {
       this.$refs['statusEditForm'].validate((valid) => {
@@ -313,7 +308,6 @@ export default {
           StatusResourceConst
             .update(this.editForm.editId, this.editForm)
             .then(response => {
-              
               this.$message({
                 message: 'Status ' + this.editForm.editName + ' has been updated successfully.',
                 type: 'success',
