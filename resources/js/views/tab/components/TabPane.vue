@@ -1,14 +1,14 @@
 <template>
   <div>
-    <el-button class="item-btn" size="small" type="success" style="margin-bottom:10px;" @click="handleCreate">
+    <el-button v-if="checkRole(['admin'])" class="item-btn" size="small" type="success" style="margin-bottom:10px;" @click="handleCreate">
       {{ $t('table.add') }}
     </el-button>
     <el-table :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column
         v-loading="loading"
         align="center"
-        :label="$t('main_status.id')"
-        width="80"
+        label="№"
+        width="50"
         element-loading-text="Pleas be patient！"
       >
         <template slot-scope="scope">
@@ -20,9 +20,19 @@
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="300px" align="center" :label="$t('main_status.statusDesc')">
+      <el-table-column min-width="200px" align="center" :label="$t('main_status.statusDesc')">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column min-width="200px" align="center" :label="$t('main_status.basicStatus')">
+        <template slot-scope="scope">
+          <span>{{ $t('projects.' + scope.row.basic_status_name) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column min-width="100px" align="center" :label="$t('main_status.statusQueue')">
+        <template slot-scope="scope">
+          <span>{{ scope.row.queue }}</span>
         </template>
       </el-table-column>
 
@@ -35,10 +45,10 @@
       </el-table-column>
       <el-table-column width="250px" align="center" :label="$t('main_status.actions')">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleEditStatus(scope.row.id);">
+          <el-button v-if="checkRole(['admin'])" type="primary" size="small" icon="el-icon-edit" @click="handleEditStatus(scope.row.id);">
             Edit
           </el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
+          <el-button v-if="checkRole(['admin'])" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id, scope.row.name);">
             Delete
           </el-button>
         </template>
@@ -54,7 +64,17 @@
           <el-form-item :label="$t('main_status.statusDesc')" type="textarea" prop="statusDescription">
             <el-input v-model="createForm.statusDescription" />
           </el-form-item>
-          <el-form-item :label="$t('main_status.status')">
+          <el-form-item :label="$t('main_status.statusQueue')" type="textarea" prop="statusQueue">
+            <el-select v-model="createForm.statusQueue" placeholder="please select" style="width: 100%;">
+              <el-option v-for="status in list" :key="status.queue" :value="status.queue" :label="$t('main_status.after')+ ' ' + status.name" class="filter-item" />
+          </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('main_status.basicStatus')" type="textarea" prop="basicStatus">
+           <el-select v-model="createForm.basicStatus" placeholder="please select" style="width: 100%;">
+              <el-option v-for="basic in basicStatusList" :key="basic.id" :value="basic.id" :label="$t('projects.' + basic.basic_status_name)" class="filter-item" />
+          </el-select>
+      </el-form-item>
+                <el-form-item :label="$t('main_status.status')">
             <el-radio-group v-model="createForm.statusActive" style="padding: 10px;">
               <el-radio :label="1">
                 {{ $t('main_status.active') }}
@@ -85,7 +105,18 @@
           <el-form-item :label="$t('main_status.statusDesc')" type="textarea" prop="statusEditDescription">
             <el-input v-model="editForm.editDescription" />
           </el-form-item>
+          <el-form-item :label="$t('main_status.statusQueue')" type="textarea" prop="statusQueue">
+            <el-select v-model="editForm.editStatusQueue" placeholder="please select" style="width: 100%;">
+              <el-option v-for="status in list" :key="status.id" :value="status.queue" :label="$t('main_status.after' ) + ' ' + status.name" class="filter-item" />
+          </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('main_status.basicStatus')" type="textarea" prop="basicStatus">
+           <el-select v-model="editForm.editBasicStatus" placeholder="please select" style="width: 100%;">
+              <el-option v-for="basic in basicStatusList" :key="basic.id" :value="basic.id" :label="$t('projects.' + basic.basic_status_name)" class="filter-item" />
+          </el-select>
+      </el-form-item>
           <el-form-item :label="$t('main_status.status')">
+
             <el-radio-group v-model="editForm.editActive" style="padding: 10px;">
               <el-radio :label="1">
                 {{ $t('main_status.active') }}
@@ -112,7 +143,11 @@
 
 <script>
 import StatusResource from '@/api/status';
+import checkRole from '@/utils/role'; // Role checking
+import BasicStatusResource from '@/api/basicStatus';
+
 const StatusResourceConst = new StatusResource();
+const basicStatusResource = new BasicStatusResource();
 
 export default {
   filters: {
@@ -136,11 +171,14 @@ export default {
       dialogEditFormVisible: false,
       statusEdit: false,
       statusCreating: false,
+      basicStatusList: [],
       createForm: {
         statusName: '',
         statusDescription: '',
         statusActive: 1,
         mainStatusId: this.type,
+        statusQueue: '',
+        basicStatus: '',
       },
       editForm: {
         editId: '',
@@ -148,10 +186,16 @@ export default {
         editDescription: '',
         editActive: '',
         editMainStatusId: this.type,
+        editStatusQueue: '',
+        editStatusName: '',
+        editBasicStatus: '',
+        queueName: '',
+        currentQueue: '',
       },
       rules: {
         statusName: [{ required: true, message: 'Status name is required', trigger: 'blur' }],
         statusDescription: [{ required: true, message: 'Status description is required', trigger: 'blur' }],
+        basicStatus: [{ required: true, message: 'Basic status is required', trigger: 'blur' }],
       },
       listItems: [],
       list: null,
@@ -163,17 +207,26 @@ export default {
     this.createForm.mainStatusId = this.type;
   },
   methods: {
+    checkRole,
     async getList() {
       this.loading = true;
       const { data } = await StatusResourceConst.list(this.createForm.mainStatusId);
+      console.log(data);
       this.list = data;
       this.loading = false;
     },
     handleCreate() {
       this.dialogFormVisible = true;
+      this.getListBasicStatus();
+      this.getList();
       this.$nextTick(() => {
         this.$refs['statusForm'].clearValidate();
       });
+    },
+          async getListBasicStatus() {
+      const { data } = await basicStatusResource.list();
+      this.basicStatusList = data.basic_statuses;
+     console.log(this.basicStatusList);
     },
     createMainStatus() {
       this.$refs['statusForm'].validate((valid) => {
@@ -182,6 +235,7 @@ export default {
           StatusResourceConst
             .store(this.createForm)
             .then(response => {
+              console.log(response);
               this.$message({
                 message: 'New status ' + this.createForm.statusName + ' has been created successfully.',
                 type: 'success',
@@ -208,14 +262,39 @@ export default {
     handleEditStatus(id) {
       this.dialogEditFormVisible = true;
       this.statusEdit = true;
+      this.getListBasicStatus();
       const found = this.list.find(list => list.id === id);
-      this.editForm = {
+      if(found.queue == 1)
+      {
+        const findQueue = 1;   
+        this.editForm = {
         editId: found.id,
         editName: found.name,
         editDescription: found.description,
         editActive: found.status,
         editMainStatusId: this.type,
+        editBasicStatus: found.basic_status_id,
+        editStatusQueue: '',
+        queueName: '',
+        currentQueue: found.queue,
       };
+      }
+      else {
+        const findQueue = found.queue - 1;
+         const foundAfter = this.list.find(list => list.queue === findQueue);
+        this.editForm = {
+        editId: found.id,
+        editName: found.name,
+        editDescription: found.description,
+        editActive: found.status,
+        editMainStatusId: this.type,
+        editStatusQueue: foundAfter.queue,
+        editBasicStatus: found.basic_status_id,
+        queueName: foundAfter.name,
+        currentQueue: found.queue,
+      };
+      }
+
       this.$nextTick(() => {
         this.$refs['statusEditForm'].clearValidate();
       });
@@ -277,12 +356,14 @@ export default {
         });
       });
     },
-    resetNewStatus() {
+    resetNewMainStatus() {
       this.createForm = {
         statusName: '',
         statusDescription: '',
         statusActive: 1,
         mainStatusId: this.type,
+        statusQueue: '',
+        basicStatus: '',
       };
     },
     resetEditStatus() {

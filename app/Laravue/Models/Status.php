@@ -4,6 +4,7 @@ namespace App\Laravue\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
+use App\Laravue\Models\BasicStatus;
 
 /**
  * Class Servers
@@ -27,9 +28,13 @@ class Status extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'status','main_status_id'
+        'name', 'description', 'status','main_status_id','queue','basic_status'
     ];
     protected $table = 'types_status';
 
+    public function basicStatus()
+    {
+        return $this->belongsTo(BasicStatus::class);
+    }
     
 }

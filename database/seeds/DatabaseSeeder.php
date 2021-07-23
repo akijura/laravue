@@ -4,6 +4,7 @@ use App\Laravue\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Laravue\Models\Role;
+use App\Laravue\Models\BasicStatus;
 
 class DatabaseSeeder extends Seeder
 {
@@ -39,7 +40,26 @@ class DatabaseSeeder extends Seeder
             'email' => 'visitor@laravue.dev',
             'password' => Hash::make('laravue'),
         ]);
-
+        $todo = BasicStatus::create([
+            'basic_status_name' => 'todo',
+            'basic_status_description' => 'To do',
+            'author_id' => 1,
+        ]);
+        $working = BasicStatus::create([
+            'basic_status_name' => 'working',
+            'basic_status_description' => 'In prossecc',
+            'author_id' => 1,
+        ]);
+        $done = BasicStatus::create([
+            'basic_status_name' => 'done',
+            'basic_status_description' => 'Done',
+            'author_id' => 1,
+        ]);
+        $cancelled = BasicStatus::create([
+            'basic_status_name' => 'cancelled',
+            'basic_status_description' => 'Cancelled',
+            'author_id' => 1,
+        ]);
         $adminRole = Role::findByName(\App\Laravue\Acl::ROLE_ADMIN);
         $managerRole = Role::findByName(\App\Laravue\Acl::ROLE_MANAGER);
         $editorRole = Role::findByName(\App\Laravue\Acl::ROLE_EDITOR);
@@ -51,5 +71,6 @@ class DatabaseSeeder extends Seeder
         $user->syncRoles($userRole);
         $visitor->syncRoles($visitorRole);
         $this->call(UsersTableSeeder::class);
+      
     }
 }

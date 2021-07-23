@@ -4,9 +4,9 @@ const elementUiRoutes = {
   path: '/element-ui',
   component: Layout,
   redirect: '/element-ui/form',
-  name: 'Element UI',
+  name: 'Status',
   meta: {
-    title: 'elementUi',
+    title: 'status',
     icon: 'layout',
     permissions: ['view menu element ui'],
   },
@@ -26,8 +26,8 @@ const elementUiRoutes = {
     {
       path: 'tab',
       component: () => import('@/views/tab'),
-      name: 'Tab',
-      meta: { title: 'tab', icon: 'tab' },
+      name: 'Manage Statuses',
+      meta: { title: 'manage_status', icon: 'tab' },
     },
   ],
 };

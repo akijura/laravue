@@ -38,9 +38,15 @@ final class Acl
     const PERMISSION_VIEW_MENU_PDF = 'view menu pdf';
     const PERMISSION_VIEW_MENU_I18N = 'view menu i18n';
 
+    //new view permissions
+    const PERMISSION_VIEW_MENU_STATUS = 'view menu status';
+
     const PERMISSION_USER_MANAGE = 'manage user';
     const PERMISSION_ARTICLE_MANAGE = 'manage article';
     const PERMISSION_PERMISSION_MANAGE = 'manage permission';
+
+    //new manage permissions
+    const PERMISSION_STATUS_MANAGE = 'manage status';
 
     /**
      * @param array $exclusives Exclude some permissions from the list

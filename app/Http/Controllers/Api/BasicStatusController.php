@@ -13,14 +13,13 @@ use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
 use App\Laravue\JsonResponse;
 use App\Laravue\Models\Permission;
-use App\Laravue\Models\Status;
+use App\Laravue\Models\BasicStatus;
 use App\Laravue\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 use Validator;
 
 /**
@@ -28,7 +27,7 @@ use Validator;
  *
  * @package App\Http\Controllers\Api
  */
-class StatusController extends BaseController
+class BasicStatusController extends BaseController
 {
     const ITEM_PER_PAGE = 15;
 
@@ -40,28 +39,8 @@ class StatusController extends BaseController
      */
     public function index(Request $request)
     {
-        $searchParams = $request->all();
-            $result = DB::select("select ts.*, bs.basic_status_name,bs.id as basic_id from types_status ts
-            left join basic_status bs on bs.id=ts.basic_status
-            where ts.main_status_id = ? order by ts.queue ASC",[$searchParams[0]]);
-       
-
- 
-        $data = [];
-        foreach ($result as $status) {
-            $row = [
-                'id' => $status->id,
-                'name' => $status->name,
-                'description' => $status->description,
-                'queue' => $status->queue,
-                'status' => $status->status,
-                'basic_status_id' => $status->basic_id,
-                'basic_status_name' => $status->basic_status_name,
-            ];
-    
-            $data[] = $row;
-        }
-        return response()->json(new JsonResponse( $data));
+        $basic_statuses = BasicStatus::all();
+        return response()->json(new JsonResponse(['basic_statuses' => $basic_statuses]));
     }
 
     /**
@@ -72,6 +51,7 @@ class StatusController extends BaseController
      */
     public function store(Request $request)
     {
+
         $validator = Validator::make(
             $request->all(),
             array_merge(
@@ -79,61 +59,22 @@ class StatusController extends BaseController
                 [
                     'statusName' => ['required', 'max:50'],
                     'mainStatusId' => ['required'],
-                    'basicStatus' => ['required'],
+                    'statusQueue' => ['required'],
                 ]
             )
         );
-       
+   
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
-            $statuses = Status::all();
            
-            if($params['statusQueue'] === null)
-            {
-                
-                if($statuses->isEmpty()== false)
-                {
-                    $validator = Validator::make(
-                        $request->all(),
-                        array_merge(
-                        
-                            [
-                                'statusQueue' => ['required'],
-                            ]
-                        )
-                    );
-                    if ($validator->fails()) {
-                        return response()->json(['errors' => $validator->errors()], 403);
-                    }
-                }
-                else {
-                    
-                    $params['statusQueue'] = 1; 
-                }
-            }
-            else {
-                $params['statusQueue'] = $params['statusQueue'] + 1;
-            }
-            $queueUpdate = DB::select("select ts.id,ts.queue from types_status ts
-            where ts.main_status_id = ? and ts.queue >= ?",[$params['mainStatusId'],$params['statusQueue']]);
-            if($queueUpdate != null)
-            {
-                foreach($queueUpdate as $queue)
-                {
-                    $queueFind = Status::find($queue->id);
-                    $queueFind->queue = $queueFind->queue + 1;
-                    $queueFind->update();
-                }
-            }
             $user = Status::create([
                 'name' => $params['statusName'],
                 'description' => $params['statusDescription'],
                 'status' => $params['statusActive'],
                 'queue' => $params['statusQueue'],
                 'main_status_id' => $params['mainStatusId'],
-                'basic_status' => $params['basicStatus'],
             ]);
 
 
@@ -161,8 +102,6 @@ class StatusController extends BaseController
      */
     public function update(Request $request, Status $status)
     {
-        $temp =  $request->all();
-        return $temp;
         if ($status === null) {
             return response()->json(['error' => 'Status not found'], 404);
         }  
@@ -172,7 +111,7 @@ class StatusController extends BaseController
                 [
                     'editName' => ['required', 'max:50'],
                     'editMainStatusId' => ['required'], 
-                    'editBasicStatus' => ['required'],
+                    'editStatusQueue' => ['required'],
                 ]
             )
         );
@@ -180,52 +119,11 @@ class StatusController extends BaseController
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-            $statuses = Status::all();
-            if($params['editStatusQueue'] === null)
-            {
-                
-                if($statuses->isEmpty() == false)
-                {
-                    $validator = Validator::make(
-                        $request->all(),
-                        array_merge(
-                        
-                            [
-                                'editStatusQueue' => ['required'],
-                            ]
-                        )
-                    );
-                    if ($validator->fails()) {
-                        return response()->json(['errors' => $validator->errors()], 403);
-                    }
-                }
-                else {
-                    
-                    $params['editStatusQueue'] = 1; 
-                }
-            }
-            else {
-                $params['editStatusQueue'] = $params['editStatusQueue'] + 1;
-            }
-            $update_statuses = Status::where('queue', '>=',$params['editStatusQueue'] )->get();
-            foreach($update_statuses as $update)
-            {
-                if($update->queue ==  $params['currentQueue'])
-                {
-                    
-                }
-                Status::where('active', 1)
-                ->where('queue', $update['queue'])
-                ->update(['delayed' => 1]);
-
-            }
             $params = $request->all();
             $status->name = $params['editName'];
             $status->description = $params['editDescription'];
             $status->status = $params['editActive'];
             $status->queue = $params['editStatusQueue'];
-            $status->main_status_id = $params['editMainStatusId'];
-            $status->basic_status = $params['editBasicStatus'];
             $status->save();
             return $status;
         }      

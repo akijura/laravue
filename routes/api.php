@@ -34,7 +34,8 @@ Route::namespace('Api')->group(function() {
         Route::apiResource('users', 'UserController')->middleware('permission:' . Acl::PERMISSION_USER_MANAGE);
         Route::apiResource('main_status', 'MainStatusController');
         Route::apiResource('status', 'StatusController');
-        //->middleware('permission:' . Acl::PERMISSION_USER_MANAGE);
+        Route::apiResource('project', 'ProjectController');
+        Route::apiResource('basicStatus', 'BasicStatusController');
         Route::apiResource('permissions', 'PermissionController')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
 
         // Custom routes

@@ -1,6 +1,6 @@
 <template>
   <div class="tab-container">
-    <span class="pan-btn light-blue-btn" @click="handleCreate">
+    <span v-if="checkRole(['admin'])" class="pan-btn light-blue-btn" @click="handleCreate">
       {{ $t('table.add') }}
     </span>
     <el-tabs v-model="activeName" v-loading="loading" style="margin-top:15px;" type="border-card">
@@ -47,6 +47,7 @@
 <script>
 import TabPane from './components/TabPane';
 import MainStatusResource from '@/api/main_status';
+import checkRole from '@/utils/role'; // Role checking
 const mainStatusResource = new MainStatusResource();
 
 export default {
@@ -76,6 +77,7 @@ export default {
     this.getList();
   },
   methods: {
+    checkRole,
     async getList() {
       this.loading = true;
       const { data } = await mainStatusResource.list();

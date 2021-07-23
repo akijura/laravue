@@ -15,6 +15,7 @@ import Layout from '@/layout';
 /* Router for modules */
 import elementUiRoutes from './modules/element-ui';
 import componentRoutes from './modules/components';
+import projectsRoutes from './modules/projects';
 import chartsRoutes from './modules/charts';
 import tableRoutes from './modules/table';
 import adminRoutes from './modules/admin';
@@ -137,6 +138,7 @@ export const constantRoutes = [
 export const asyncRoutes = [
   permissionRoutes,
   componentRoutes,
+  projectsRoutes,
   chartsRoutes,
   nestedRoutes,
   tableRoutes,
