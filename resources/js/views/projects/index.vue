@@ -2,10 +2,11 @@
   <div class="mixin-components-container">
     <el-row>
       <el-card class="box-card">
-        <div slot="header" class="clearfix">
+        <div :class="{'show':show}" class="header-search">
           <span>{{ $t('route.projects') }}</span>
-          <el-input :placeholder="$t('table.keyword')" style="margin-left: 400px;width: 200px;" class="filter-item" />
-          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search">
+          <!-- <el-input :placeholder="$t('table.keyword')" style="margin-left: 400px;width: 200px;" class="filter-item" /> -->
+          <el-input v-model="query.keyword" :placeholder="$t('table.keyword')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-left: 10px;" @click="handleFilter">
             {{ $t('table.search') }}
           </el-button>
           <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
@@ -14,38 +15,25 @@
         </div>
       </el-card>
     </el-row>
-    <el-row :gutter="20" style="margin-top:50px;">
+    <el-row v-loading="loading" :gutter="20" style="margin-top:50px;">
 
       <el-col :span="6">
         <div class="board-column-header-todo">
           {{ $t('projects.todo') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
+          <div v-for="todo in todoList" :key="todo.id" class="component-item-project">
+            {{ todo.name }}
           </div>
         </div>
-
       </el-col>
       <el-col :span="6">
         <div class="board-column-header-working">
           {{ $t('projects.working') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
+          <div v-for="working in workingList" :key="working.id" class="component-item-project">
+            {{ working.name }}
           </div>
         </div>
 
@@ -55,37 +43,18 @@
           {{ $t('projects.done') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
+          <div v-for="done in doneList" :key="done.id" class="component-item-project">
+            {{ done.name }}
           </div>
         </div>
-
       </el-col>
       <el-col :span="6">
         <div class="board-column-header-cancelled">
           {{ $t('projects.cancelled') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
-          </div>
-          <div class="component-item-project">
-            Test
+          <div v-for="cancel in cancelledList" :key="cancel.id" class="component-item-project">
+            {{ cancel.name }}
           </div>
         </div>
 
@@ -163,6 +132,8 @@ import waves from '@/directive/waves/index.js'; // v-wave directive
 import UserResource from '@/api/user';
 import MainStatusResource from '@/api/main_status';
 import ProjectResource from '@/api/project';
+import Fuse from 'fuse.js';
+import path from 'path';
 
 const mainStatusResource = new MainStatusResource();
 const userResource = new UserResource();
@@ -174,9 +145,18 @@ export default {
   },
   data() {
     return {
+      query: {
+        keyword: '',
+      },
+      search: '',
+      options: [],
+      searchPool: [],
+      show: false,
+      fuse: undefined,
       dialogFormVisible: false,
       loadingCreateProject: false,
       userList: [],
+      projectList: [],
       listMainStatus: '',
       createProjectForm: {
         projectName: '',
@@ -199,39 +179,160 @@ export default {
       options: {
         group: 'mission',
       },
-      list1: [
-        { name: 'Mission', id: 1 },
-        { name: 'Mission', id: 2 },
-        { name: 'Mission', id: 3 },
-        { name: 'Mission', id: 4 },
-      ],
-      list2: [
-        { name: 'Mission', id: 5 },
-        { name: 'Mission', id: 6 },
-        { name: 'Mission', id: 7 },
-      ],
-      list3: [
-        { name: 'Mission', id: 8 },
-        { name: 'Mission', id: 9 },
-        { name: 'Mission', id: 10 },
-      ],
+      todoList: [],
+      workingList: [],
+      doneList: [],
+      cancelledList: [],
     };
   },
+  watch: {
+    lang() {
+      this.searchPool = this.generateRoutes(this.routes);
+    },
+    routes() {
+      this.searchPool = this.generateRoutes(this.routes);
+    },
+    searchPool(list) {
+      this.initFuse(list);
+    },
+    show(value) {
+      if (value) {
+        document.body.addEventListener('click', this.close);
+      } else {
+        document.body.removeEventListener('click', this.close);
+      }
+    },
+  },
+  created() {
+    this.getListProject();
+  },
   methods: {
+    initFuse(list) {
+      this.fuse = new Fuse(list, {
+        shouldSort: true,
+        threshold: 0.4,
+        location: 0,
+        distance: 100,
+        maxPatternLength: 32,
+        minMatchCharLength: 1,
+        keys: [{
+          name: 'title',
+          weight: 0.7,
+        }, {
+          name: 'path',
+          weight: 0.3,
+        }],
+      });
+    },
+    click() {
+      this.show = !this.show;
+      if (this.show) {
+        this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus();
+      }
+    },
+    close() {
+      this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur();
+      this.options = [];
+      this.show = false;
+    },
+    querySearch(query) {
+      if (query !== '') {
+        this.options = this.fuse.search(query);
+      } else {
+        this.options = [];
+      }
+    },
+    change(val) {
+      this.$router.push(val.path);
+      this.search = '';
+      this.options = [];
+      this.$nextTick(() => {
+        this.show = false;
+      });
+    },
+    handleFilter() {
+      this.todoList = [],
+      this.workingList = [],
+      this.doneList = [],
+      this.cancelledList = [],
+      this.getListProject();
+    },
+    async getListProject(){
+      this.loading = true;
+      const { data } = await projectResource.list(this.query);
+      this.projectList = data;
+      console.log(this.projectList.length);
+      if (this.projectList.length === 0) {
+        this.todoList = [];
+        this.workingList = [];
+        this.doneList = [];
+        this.cancelledList = [];
+      } else {
+        this.projectList.forEach((project) => {
+          if (project['basic_status'] === 1) {
+            this.todoList.push({
+              basic_status: project['basic_status'],
+              begin_date: project['begin_date'],
+              description: project['description'],
+              end_date: project['end_date'],
+              id: project['id'],
+              main_status_id: project['main_status_id'],
+              name: project['name'],
+              status: project['status'],
+            });
+          } else if (project['basic_status'] === 2) {
+            this.workingList.push({
+              basic_status: project['basic_status'],
+              begin_date: project['begin_date'],
+              description: project['description'],
+              end_date: project['end_date'],
+              id: project['id'],
+              main_status_id: project['main_status_id'],
+              name: project['name'],
+              status: project['status'],
+            });
+          } else if (project['basic_status'] === 3) {
+            this.doneList.push({
+              basic_status: project['basic_status'],
+              begin_date: project['begin_date'],
+              description: project['description'],
+              end_date: project['end_date'],
+              id: project['id'],
+              main_status_id: project['main_status_id'],
+              name: project['name'],
+              status: project['status'],
+            });
+          } else {
+            this.cancelledList.push({
+              basic_status: project['basic_status'],
+              begin_date: project['begin_date'],
+              description: project['description'],
+              end_date: project['end_date'],
+              id: project['id'],
+              main_status_id: project['main_status_id'],
+              name: project['name'],
+              status: project['status'],
+            });
+          }
+        });
+      }
+
+      console.log(this.todoList);
+      this.loading = false;
+    },
     handleCreate() {
       this.dialogFormVisible = true;
       this.loadingCreateProject = true;
       this.getListUsers();
-      this.getListStatus();
-      this.$nextTick(() => {
-        this.$refs['createProjectForm'].clearValidate();
-      });
+      // this.getListStatus();
+      // this.$nextTick(() => {
+      //   this.$refs['createProjectForm'].clearValidate();
+      // });
       this.loadingCreateProject = false;
     },
     async getListUsers() {
       const { data } = await userResource.list();
       this.userList = data;
-      console.log(this.userList);
     },
     async getListStatus() {
       const { data } = await mainStatusResource.list();
@@ -349,5 +450,45 @@ export default {
   }
   .line{
   text-align: center;
+}
+
+</style>
+<style lang="scss" scoped>
+.header-search {
+  font-size: 0 !important;
+
+  .search-icon {
+    cursor: pointer;
+    font-size: 18px;
+    vertical-align: middle;
+  }
+
+  .header-search-select {
+    font-size: 18px;
+    transition: width 0.2s;
+    width: 0;
+    overflow: hidden;
+    background: transparent;
+    border-radius: 0;
+    display: inline-block;
+    vertical-align: middle;
+
+    /deep/ .el-input__inner {
+      border-radius: 0;
+      border: 0;
+      padding-left: 0;
+      padding-right: 0;
+      box-shadow: none !important;
+      border-bottom: 1px solid #d9d9d9;
+      vertical-align: middle;
+    }
+  }
+
+  &.show {
+    .header-search-select {
+      width: 210px;
+      margin-left: 10px;
+    }
+  }
 }
 </style>

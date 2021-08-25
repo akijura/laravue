@@ -41,6 +41,7 @@ class StatusController extends BaseController
      */
     public function index(Request $request)
     {
+
         $searchParams = $request->all();
             $result = DB::select("select ts.*, bs.basic_status_name,bs.id as basic_id from types_status ts
             left join basic_status bs on bs.id=ts.basic_status
@@ -74,6 +75,7 @@ class StatusController extends BaseController
      */
     public function store(Request $request)
     {
+
         $validator = Validator::make(
             $request->all(),
             array_merge(

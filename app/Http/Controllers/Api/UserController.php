@@ -39,6 +39,7 @@ class UserController extends BaseController
      */
     public function index(Request $request)
     {
+       
         $searchParams = $request->all();
         $userQuery = User::query();
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);

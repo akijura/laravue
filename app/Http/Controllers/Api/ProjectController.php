@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\ProjectResource;
 use App\Laravue\JsonResponse;
 use App\Laravue\Models\Permission;
 use App\Laravue\Models\Status;
@@ -42,22 +43,18 @@ class ProjectController extends BaseController
      * @return \Illuminate\Http\Response|ResourceCollection
      */
     public function index(Request $request)
-    {
+    {       
+       
         $searchParams = $request->all();
-        $statuses = Status::where('main_status_id', 'LIKE', $searchParams[0])->get();
-        $data = [];
-        foreach ($statuses as $status) {
-            $row = [
-                'id' => $status['id'],
-                'name' => $status['name'],
-                'description' => $status['description'],
-                'queue' => $status['queue'],
-                'status' => $status['status'],
-            ];
-    
-            $data[] = $row;
+        $projectQuery = Projects::query();
+      
+     
+        $keyword = Arr::get($searchParams, 'keyword', '');
+        if (!empty($keyword)) {
+            $projectQuery->where('name', 'ILIKE', '%' . $keyword . '%');
+            $projectQuery->orWhere('description', 'ILIKE', '%' . $keyword . '%');
         }
-        return response()->json(new JsonResponse( $data));
+        return ProjectResource::collection($projectQuery->get());
     }
 
     /**
@@ -68,6 +65,7 @@ class ProjectController extends BaseController
      */
     public function store(Request $request)
     {
+        
         $validator = Validator::make(
             $request->all(),
             array_merge(
@@ -87,12 +85,15 @@ class ProjectController extends BaseController
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
+           
             $currentUser = Auth::user();
             $authorId = $currentUser['id'];
             $params = $request->all();
             $date = date('Y-m-d', strtotime($params['projectEndDate']));
             $status = Status::where('main_status_id', 'LIKE', $params['projectTypeStatus'])->orderBy('queue', 'asc')->get(); // get first status by queue
             $status_id = $status[0]['id'];
+            $basic_status = $status[0]['basic_status'];
+       
             $project = Projects::create([
                 'name' => $params['projectName'],
                 'description' => $params['projectDescription'],
@@ -100,9 +101,11 @@ class ProjectController extends BaseController
                 'end_date' => date('Y-m-d', strtotime($params['projectEndDate'])),
                 'main_status_id' => $params['projectTypeStatus'],
                 'type_status' =>  $status_id,
+                'basic_status' =>  $basic_status,
                 'author_id' => $authorId,
                 'status' => $params['projectStatusActive'],
             ]);
+
             $projects = Projects::where('name', 'LIKE', $params['projectName'])->get();
             foreach ($params['projectExecutors'] as $executor)
             {
