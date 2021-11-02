@@ -27,6 +27,13 @@ const adminRoutes = {
       name: 'UserList',
       meta: { title: 'users', icon: 'user', permissions: ['manage user'] },
     },
+    /** Notification */
+    {
+      path: 'notifications',
+      component: () => import('@/views/role-permission/List'),
+      name: 'NotificationList',
+      meta: { title: 'Notifications', icon: 'guide', permissions: ['manage permission'] },
+    },
     /** Role and permission */
     {
       path: 'roles',

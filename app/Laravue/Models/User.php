@@ -99,4 +99,9 @@ class User extends Authenticatable
 
         return false;
     }
+
+    public function notificationCredentials()
+    {
+        return $this->hasMany(NotificationCredential::class);
+    }
 }
