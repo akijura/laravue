@@ -91,8 +91,7 @@ export default {
       this.activeName = this.activeName.toString();
       this.loading = false;
     },
-    numToStr(num)
-    {
+    numToStr(num) {
       num = num.toString();
       return num;
     },

@@ -193,7 +193,7 @@ export default {
     'confirmPassword': 'Подтвердить пароль',
     'name': 'Имя',
     'email': 'Email',
-    'create_role' : 'Создать новую роль',
+    'create_role': 'Создать новую роль',
   },
   roles: {
     description: {

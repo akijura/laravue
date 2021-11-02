@@ -193,7 +193,7 @@ export default {
     'confirmPassword': 'Confirm password',
     'name': 'Name',
     'email': 'Email',
-    'create_role' : 'Create New Role',
+    'create_role': 'Create New Role',
   },
   roles: {
     description: {
@@ -255,6 +255,6 @@ export default {
     'up': 'up',
     'confirmed': 'Confirmed',
     'not_confirmed': 'Not confirmed',
-    
+
   },
 };

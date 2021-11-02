@@ -38,12 +38,10 @@ export default {
   methods: {
     async getAuthor() {
       const projectId = localStorage.getItem('projectId');
-      await getProjectAuth(projectId).then(response => {     
-          this.user =response.data.author_name;
-          console.log(this.$route.params.projectId);
-            });
-    
-    
+      await getProjectAuth(projectId).then(response => {
+        this.user = response.data.author_name;
+        console.log(this.$route.params.projectId);
+      });
     },
   },
 };

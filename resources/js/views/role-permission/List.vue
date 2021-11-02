@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-      <el-button class="filter-item" style="margin-right: 60px; margin-bottom: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
+    <el-button class="filter-item" style="margin-right: 60px; margin-bottom: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
       {{ $t('table.add') }}
     </el-button>
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
@@ -178,8 +178,7 @@ export default {
       this.menuPermissions = menu;
       this.otherPermissions = other;
     },
-    handleDelete(id,name)
-  {
+    handleDelete(id, name) {
       this.$confirm('This will permanently delete role ' + name + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
@@ -192,8 +191,8 @@ export default {
             message: 'Delete completed',
             duration: 2000,
           });
-      this.getRoles();
-      this.roleCreating = false;
+          this.getRoles();
+          this.roleCreating = false;
         }).catch(error => {
           console.log(error);
         });
@@ -203,7 +202,6 @@ export default {
           message: 'Delete canceled',
         });
       });
-
     },
     classifyPermissions(permissions) {
       const all = []; const menu = []; const other = [];
@@ -240,49 +238,48 @@ export default {
       });
     },
     onSubmit() {
-       this.$refs['roleForm'].validate((valid) => {
-         if (valid) {
-      this.roleCreating = true;
-      roleResource
-        .store(this.newRole)
-        .then(response => {
-          console.log(response.error);
-          this.$message({
-            message: 'New role ' + this.newRole.role + ' has been created successfully.',
-            type: 'success',
-            duration: 5 * 1000,
-          });
-          this.resetNewRole();
-          this.roleCreating = false;
-        })
-        .catch(error => {
-          console.log(error);
-        })
-        .finally(() => {
-          this.roleCreating = false;
-          this.getRoles();
-        });
-
+      this.$refs['roleForm'].validate((valid) => {
+        if (valid) {
+          this.roleCreating = true;
+          roleResource
+            .store(this.newRole)
+            .then(response => {
+              console.log(response.error);
+              this.$message({
+                message: 'New role ' + this.newRole.role + ' has been created successfully.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.resetNewRole();
+              this.roleCreating = false;
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.roleCreating = false;
+              this.getRoles();
+            });
         } else {
           console.log('error submit!!');
           return false;
         }
 
-      //     this.roleCreating = true;
-      //     await createRole(this.newRole).then(() => {
-      //     this.$notify({
-      //     title: 'Success',
-      //     message: 'Created successfully',
-      //     type: 'success',
-      //     duration: 2000,
-      //   });
-      // });
-      // this.resetNewRole();
-      this.dialogFormVisible = false;
+        //     this.roleCreating = true;
+        //     await createRole(this.newRole).then(() => {
+        //     this.$notify({
+        //     title: 'Success',
+        //     message: 'Created successfully',
+        //     type: 'success',
+        //     duration: 2000,
+        //   });
+        // });
+        // this.resetNewRole();
+        this.dialogFormVisible = false;
 
-      this.getRoles();
-      this.roleCreating = false;
-       });
+        this.getRoles();
+        this.roleCreating = false;
+      });
     },
     confirmPermission() {
       const checkedMenu = this.$refs.menuPermissions.getCheckedKeys();

@@ -15,19 +15,19 @@
       <div class="box-social">
         <el-table :data="members" :show-header="false">
           <el-table-column prop="name" label="Name" />
-           <el-table-column prop="email" label="Email" />
+          <el-table-column prop="email" label="Email" />
         </el-table>
       </div>
       <div class="user-follow">
-        <el-button type="success" v-role="['admin','moderator']" style="width: 100%;" @click="handleAdd">
+        <el-button v-role="['admin','moderator']" type="success" style="width: 100%;" @click="handleAdd">
           {{ $t('table.add') }}
         </el-button>
       </div>
     </div>
-  <el-dialog :title="$t('projects.add_member')" :visible.sync="dialogFormVisible">
+    <el-dialog :title="$t('projects.add_member')" :visible.sync="dialogFormVisible">
       <div v-loading="loading" class="form-container">
         <el-form ref="addProjectMember" :model="addProjectMember" label-position="left" label-width="150px" style="max-width: 900px;">
-          <el-form-item :label="$t('projects.projectExecutors')" type="textarea" prop="projectExecutors" > 
+          <el-form-item :label="$t('projects.projectExecutors')" type="textarea" prop="projectExecutors">
             <el-select
               v-model="addProjectMember.projectExecutors"
               style="width: 100%;"
@@ -39,7 +39,7 @@
               <el-option v-for="user in userList" :key="user.id" :value="user.id" :label="user.name" class="filter-item" />
             </el-select>
           </el-form-item>
-         
+
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
@@ -53,12 +53,12 @@
       </div>
     </el-dialog>
   </el-card>
-  
+
 </template>
 
 <script>
 import PanThumb from '@/components/PanThumb';
-import { getProjectMembers,addProjectMember } from '@/api/project';
+import { getProjectMembers, addProjectMember } from '@/api/project';
 import UserResource from '@/api/user';
 import ProjectResource from '@/api/project';
 import role from '@/directive/role'; // Permission directive (v-role)
@@ -68,6 +68,9 @@ const projectResource = new ProjectResource();
 
 export default {
   components: { PanThumb },
+  directives: {
+    role,
+  },
   props: {
     user: {
       type: Object,
@@ -80,9 +83,6 @@ export default {
         };
       },
     },
-  },
-  directives: {
-    role
   },
   data() {
     return {
@@ -113,7 +113,7 @@ export default {
       this.query.projectDetail = 'OK';
       this.loading = true;
       const { data } = await projectResource.list(this.query);
-        
+
       this.projectDetails = data[0];
 
       this.loading = false;
@@ -124,27 +124,27 @@ export default {
     },
     async getProMembers() {
       const projectId = localStorage.getItem('projectId');
-      await getProjectMembers(projectId).then(response => {    
+      await getProjectMembers(projectId).then(response => {
         this.members = response.data;
-            });
+      });
     },
     async getListUsers() {
       const { data } = await userResource.list();
       this.userList = data;
     },
     handleAdd() {
-       const projectId = localStorage.getItem('projectId');
+      const projectId = localStorage.getItem('projectId');
       this.addProjectMember.projectExecutors = [];
       this.dialogFormVisible = true;
       this.loading = true;
       this.members.forEach((element) => {
-      this.addProjectMember.projectExecutors.push(element['id']);
-        });
+        this.addProjectMember.projectExecutors.push(element['id']);
+      });
       this.addProjectMember.projectId = projectId;
       this.getListUsers();
       this.loading = false;
     },
-      async addProMember(){
+    async addProMember(){
       await addProjectMember(this.addProjectMember).then((response) => {
         this.dialogFormVisible = false;
         this.$notify({

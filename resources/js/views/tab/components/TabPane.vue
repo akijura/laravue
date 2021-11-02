@@ -78,8 +78,8 @@
               <el-option v-for="basic in basicStatusList" :key="basic.id" :value="basic.id" :label="$t('projects.' + basic.basic_status_name)" class="filter-item" />
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('main_status.percent')"  prop="percent">
-            <el-input v-model="createForm.percent" type="number"/>
+          <el-form-item :label="$t('main_status.percent')" prop="percent">
+            <el-input v-model="createForm.percent" type="number" />
           </el-form-item>
           <el-form-item :label="$t('main_status.status')">
             <el-radio-group v-model="createForm.statusActive" style="padding: 10px;">
@@ -103,7 +103,7 @@
         </div>
       </div>
     </el-dialog>
-    <el-dialog :title="$t('main_status.text_dialog_status_edit') + '  ' + this.editForm.editName" :visible.sync="dialogEditFormVisible" >
+    <el-dialog :title="$t('main_status.text_dialog_status_edit') + '  ' + this.editForm.editName" :visible.sync="dialogEditFormVisible">
       <div v-loading="statusEdit" class="form-container">
         <el-form ref="statusEditForm" :model="editForm" label-position="left" label-width="150px" style="max-width: 500px;" :rules="editRules">
           <el-form-item :label="$t('main_status.statusName')" prop="editName">
@@ -122,8 +122,8 @@
               <el-option v-for="basic in basicStatusList" :key="basic.id" :value="basic.id" :label="$t('projects.' + basic.basic_status_name)" class="filter-item" />
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('main_status.percent')"  prop="editPercent">
-            <el-input v-model="editForm.editPercent" type="number"/>
+          <el-form-item :label="$t('main_status.percent')" prop="editPercent">
+            <el-input v-model="editForm.editPercent" type="number" />
           </el-form-item>
           <el-form-item :label="$t('main_status.status')">
 
@@ -172,7 +172,7 @@ export default {
   props: {
     type: {
       type: String,
-      default: "1",
+      default: '1',
     },
   },
   data() {
@@ -281,14 +281,13 @@ export default {
       });
     },
     handleEditStatus(id) {
-
       this.dialogEditFormVisible = true;
       this.statusEdit = true;
       this.getListBasicStatus();
       this.getCurrentListBasicStatus(id);
       this.getList();
       const found = this.list.find(list => list.id === id);
-           
+
       if (found.queue === 1) {
         this.editForm = {
           editId: found.id,
@@ -302,10 +301,9 @@ export default {
           currentQueue: found.queue,
           editPercent: found.percent,
         };
-      } 
-      else {
+      } else {
         const findQueue = found.queue - 1;
-       
+
         const foundAfter = this.list.find(list => list.queue === findQueue);
         this.editForm = {
           editId: found.id,

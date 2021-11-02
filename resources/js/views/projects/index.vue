@@ -9,7 +9,7 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-left: 10px;" @click="handleFilter">
             {{ $t('table.search') }}
           </el-button>
-          <el-button class="filter-item" style="margin-left: 10px;" v-role="['admin','moderator']" type="primary" icon="el-icon-plus" @click="handleCreate">
+          <el-button v-role="['admin','moderator']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
             {{ $t('table.add') }}
           </el-button>
         </div>
@@ -24,12 +24,12 @@
         <div class="component-item" style="min-height: calc(100vh - 84px);">
           <div v-for="todo in todoList" :key="todo.id" class="component-item-project" @click="getProjectId(todo.id)">
             {{ todo.name }}
-             <div class="pull-right">
-               <el-tag class="tag-title" :type="todo.level | statusFilter">
-                   {{todo.level_name}}
+            <div class="pull-right">
+              <el-tag class="tag-title" :type="todo.level | statusFilter">
+                {{ todo.level_name }}
               </el-tag>
-               </div>
-      
+            </div>
+
           </div>
         </div>
       </el-col>
@@ -41,10 +41,10 @@
           <div v-for="working in workingList" :key="working.id" class="component-item-project" @click="getProjectId(working.id)">
             {{ working.name }}
             <div class="pull-right">
-               <el-tag class="tag-title" :type="working.level | statusFilter">
-                   {{working.level_name}}
+              <el-tag class="tag-title" :type="working.level | statusFilter">
+                {{ working.level_name }}
               </el-tag>
-               </div>
+            </div>
           </div>
         </div>
 
@@ -54,13 +54,13 @@
           {{ $t('projects.done') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div v-for="done in doneList" :key="done.id" class="component-item-project"  @click="getProjectId(done.id)">
+          <div v-for="done in doneList" :key="done.id" class="component-item-project" @click="getProjectId(done.id)">
             {{ done.name }}
             <div class="pull-right">
-               <el-tag class="tag-title" :type="done.level | statusFilter">
-                   {{done.level_name}}
+              <el-tag class="tag-title" :type="done.level | statusFilter">
+                {{ done.level_name }}
               </el-tag>
-               </div>
+            </div>
           </div>
         </div>
       </el-col>
@@ -72,10 +72,10 @@
           <div v-for="cancel in cancelledList" :key="cancel.id" class="component-item-project" @click="getProjectId(cancel.id)">
             {{ cancel.name }}
             <div class="pull-right">
-               <el-tag class="tag-title" :type="cancel.level | statusFilter">
-                   {{cancel.level_name}}
+              <el-tag class="tag-title" :type="cancel.level | statusFilter">
+                {{ cancel.level_name }}
               </el-tag>
-               </div>
+            </div>
           </div>
         </div>
 
@@ -124,7 +124,7 @@
               <el-option v-for="level in projectLevels" :key="level.id" :value="level.id" :label="level.name" class="filter-item" />
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('projects.projectComment')"  prop="projectComment">
+          <el-form-item :label="$t('projects.projectComment')" prop="projectComment">
             <el-input v-model="createProjectForm.projectComment" type="textarea" />
           </el-form-item>
           <el-form-item :label="$t('main_status.status')">
@@ -188,7 +188,7 @@ export default {
   directives: {
     waves,
     permission,
-    role
+    role,
   },
   data() {
     return {
@@ -419,7 +419,7 @@ export default {
       this.listMainStatus = data.main_statuses;
     },
     resetNewProject() {
-        this.createProjectForm = {
+      this.createProjectForm = {
         projectName: '',
         projectDescription: '',
         projectBeginDate: '',
@@ -452,7 +452,6 @@ export default {
             .finally(() => {
               this.loadingCreateProject = false;
               this.dialogFormVisible = false;
-             
             });
         } else {
           console.log('error submit!!');
