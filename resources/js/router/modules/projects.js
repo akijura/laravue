@@ -18,15 +18,16 @@ const componentRoutes = {
       component: () => import('@/views/projects/index'),
       name: 'projectsList',
       meta: { title: 'projectsList' },
-      permissions: ['view menu projectsList'],
     },
-    {
-      path: 'markdown',
-      component: () => import('@/views/components-demo/Markdown'),
-      name: 'MarkdownDemo',
-      meta: { title: 'markdown' },
-    },
+    // {
+    //   path: 'markdown',
+    //   component: () => import('@/views/components-demo/Markdown'),
+    //   name: 'MarkdownDemo',
+    //   meta: { title: 'markdown' },
+    // },
+
   ],
+
 };
 
 export default componentRoutes;
