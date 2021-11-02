@@ -13,6 +13,8 @@ use App\Laravue\Models\Permission;
 use Illuminate\Http\Request;
 use App\Laravue\Models\Role;
 use App\Http\Resources\RoleResource;
+use Illuminate\Support\Facades\DB;
+use Validator;
 
 /**
  * Class RoleController
@@ -39,7 +41,23 @@ class RoleController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make(
+            $request->all(),
+            array_merge(
+                [
+                    'role' => ['required', 'max:50'],
+                ]
+            )
+        );
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        } else {
+            $params = $request->all();
+            $role = Role::create([
+                'name' => $params['role'],
+            ]);
+            return new RoleResource($role);
+            }
     }
 
     /**
@@ -79,9 +97,21 @@ class RoleController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy( Role $role)
     {
-        //
+        $check_role = DB::select("select  * from role_has_permissions where role_id = ? ",[$role->id]);
+        if($check_role == null)
+        {
+            try {
+                $role->delete();
+            } catch (\Exception $ex) {
+                return response()->json(['error' => $ex->getMessage()], 403);
+            }
+        }
+        else 
+        {
+            return response()->json(['error' => "Can not delete this role,it has been used for permissions"], 403);
+        }
     }
 
     /**

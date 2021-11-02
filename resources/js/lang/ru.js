@@ -74,6 +74,7 @@ export default {
     administrator: 'Администратор',
     users: 'Пользователи',
     userProfile: 'Профиль пользователя',
+    projectDetail: 'Детали проекта',
   },
   navbar: {
     logOut: 'Выход',
@@ -192,6 +193,7 @@ export default {
     'confirmPassword': 'Подтвердить пароль',
     'name': 'Имя',
     'email': 'Email',
+    'create_role' : 'Создать новую роль',
   },
   roles: {
     description: {
@@ -218,6 +220,8 @@ export default {
     'statusQueue': 'Очередь статуса',
     'basicStatus': 'Базовый статус',
     'after': 'После',
+    'percent': 'Процент',
+
   },
   projects: {
     'todo': 'Начало',
@@ -232,5 +236,24 @@ export default {
     'period': 'Период проекта',
     'projectExecutors': 'Исполнители проекта',
     'projectComment': 'Комментарий к проекту',
+    'project_level': 'Приоритет проекта',
+    'createdAt': 'Создано в',
+    'changeTypeStatus': 'Изменить статус',
+    'creator': 'Создатель',
+    'add_member': 'Добавить участника проекта',
+    'files': 'Файлы',
+    'comment': 'Комментарий',
+    'about': 'О проекте',
+    'proccess': 'Процесс',
+    'deadline': 'Предельный срок',
+    'change_status': 'Изменение Статусы',
+    'priority': 'Приоритет',
+    'from': 'От',
+    'to': 'До',
+    'dayspro': 'Дни для проекта',
+    'raminedays': 'Оставшиеся дни',
+    'up': 'вверх',
+    'confirmed': 'Подтверждено',
+    'not_confirmed': 'Не подтверждено',
   },
 };

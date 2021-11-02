@@ -24,6 +24,6 @@ class Projects extends Model
     use Notifiable, HasRoles, HasApiTokens;
    
     protected $fillable = [
-        'name', 'description', 'begin_date','end_date','main_status_id','type_status','author_id','status','basic_status',
+        'name', 'description', 'begin_date','end_date','main_status_id','type_status','author_id','status','basic_status','project_level','status_confirm',
     ];
 }

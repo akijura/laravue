@@ -18,6 +18,8 @@ class ProjectReport extends Migration
             $table->integer('project_id')->nullable(false);
             $table->integer('type_status')->nullable(false);
             $table->integer('user_id')->nullable(false);
+            $table->integer('comment_id')->nullable(true);
+            $table->integer('status_confirm')->default(0);
             $table->timestamps();
         });
     }

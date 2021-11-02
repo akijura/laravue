@@ -144,7 +144,27 @@ class UserController extends BaseController
             return new UserResource($user);
         }
     }
-
+    public function updateuser()
+    {
+        $user = User::find(request()->editid);
+        $user->name = request()->editname;
+        $user->email = request()->editemail;
+        $user->update();
+        $user->syncRoles(request()->editrole);
+        return 'ok';
+    }
+    public function userroles()
+    {
+        $roles = Role::select('name')->where('name', 'NOT LIKE', '%admin%')->get();
+        return response()->json(new JsonResponse ( ['nonAdminRole' => $roles]));
+    }
+    public function Edit($id)
+    {
+        $userRole = User::find($id)->load('roles');
+        $current = $userRole->roles[0]['name'];
+        $user = User::find($id);
+        return response()->json(new JsonResponse (['editItems' => $user,'current' => $current]));
+    }
     /**
      * Update the specified resource in storage.
      *

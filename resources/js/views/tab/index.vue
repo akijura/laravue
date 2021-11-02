@@ -4,9 +4,9 @@
       {{ $t('table.add') }}
     </span>
     <el-tabs v-model="activeName" v-loading="loading" style="margin-top:15px;" type="border-card">
-      <el-tab-pane v-for="item in listMainStatus" :key="item.id" :label="item.name" :name="item.id">
+      <el-tab-pane v-for="item in listMainStatus" :key="item.id" :label="item.name" :name="numToStr(item.id)">
         <keep-alive>
-          <tab-pane v-if="activeName==item.id" :type="item.id" />
+          <tab-pane v-if="activeName==numToStr(item.id)" :type="numToStr(item.id)" />
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -83,8 +83,18 @@ export default {
       const { data } = await mainStatusResource.list();
 
       this.listMainStatus = data.main_statuses;
+      //       this.listMainStatus.forEach((status, index) => {
+      //   status['index'] = index + 1;
+      //   role['description'] = this.$t('roles.description.' + role.name);
+      // });
       this.activeName = data.main_statuses[0].id;
+      this.activeName = this.activeName.toString();
       this.loading = false;
+    },
+    numToStr(num)
+    {
+      num = num.toString();
+      return num;
     },
     handleCreate() {
       this.dialogFormVisible = true;
@@ -100,7 +110,6 @@ export default {
           mainStatusResource
             .store(this.createMainForm)
             .then(response => {
-              console.log(response);
               this.$message({
                 message: 'New status ' + this.createMainForm.mainStatusName + ' has been created successfully.',
                 type: 'success',

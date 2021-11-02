@@ -74,6 +74,7 @@ export default {
     administrator: 'Administrator',
     users: 'Users',
     userProfile: 'User Profile',
+    projectDetail: 'Project Detail',
   },
   navbar: {
     logOut: 'Log Out',
@@ -192,6 +193,7 @@ export default {
     'confirmPassword': 'Confirm password',
     'name': 'Name',
     'email': 'Email',
+    'create_role' : 'Create New Role',
   },
   roles: {
     description: {
@@ -218,6 +220,7 @@ export default {
     'statusQueue': 'Status Queue',
     'basicStatus': 'Basic Status',
     'after': 'After',
+    'percent': 'Percent',
 
   },
   projects: {
@@ -233,5 +236,25 @@ export default {
     'period': 'Project Period',
     'projectExecutors': 'Project Users',
     'projectComment': 'Project Comment',
+    'project_level': 'Project priority',
+    'createdAt': 'Created at',
+    'changeTypeStatus': 'Change Status',
+    'creator': 'Creator',
+    'add_member': 'Add Project Member',
+    'files': 'Files',
+    'comment': 'Comment',
+    'about': 'About Project',
+    'proccess': 'Proccess',
+    'deadline': 'Deadline',
+    'change_status': 'Changes Statuses',
+    'priority': 'Priority',
+    'from': 'From',
+    'to': 'To',
+    'dayspro': 'Days for Project',
+    'raminedays': 'Remained Days',
+    'up': 'up',
+    'confirmed': 'Confirmed',
+    'not_confirmed': 'Not confirmed',
+    
   },
 };

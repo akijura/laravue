@@ -21,6 +21,7 @@ class TypesStatus extends Migration
             $table->integer('queue')->nullable(false);
             $table->integer('status')->default(1);
             $table->integer('basic_status')->nullable(false);
+            $table->integer('percent')->nullable(false);
             $table->timestamps();
         });
     }

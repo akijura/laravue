@@ -21,13 +21,15 @@ class Resource {
       method: 'get',
     });
   }
-  store(resource) {
+  store(resource, exdata) {
     return request({
       url: '/' + this.uri,
       method: 'post',
       data: resource,
+      exdata: exdata,
     });
   }
+
   update(id, resource) {
     return request({
       url: '/' + this.uri + '/' + id,

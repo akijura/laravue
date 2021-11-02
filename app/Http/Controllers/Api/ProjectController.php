@@ -25,6 +25,8 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Laravue\Models\ProjectLevel;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 /**
@@ -44,17 +46,74 @@ class ProjectController extends BaseController
      */
     public function index(Request $request)
     {       
-       
+        $currentUser = Auth::user();
+        $current = $currentUser->roles[0]['name'];
         $searchParams = $request->all();
         $projectQuery = Projects::query();
-      
-     
         $keyword = Arr::get($searchParams, 'keyword', '');
-        if (!empty($keyword)) {
-            $projectQuery->where('name', 'ILIKE', '%' . $keyword . '%');
-            $projectQuery->orWhere('description', 'ILIKE', '%' . $keyword . '%');
+        $id = Arr::get($searchParams, 'id', '');
+        $projectDetail = Arr::get($searchParams, 'projectDetail', '');
+        if ( $current === 'admin'){
+            if($projectDetail == 'OK')
+            {
+                if(!empty($id))
+                {
+                    $projectQuery->where('id', 'ILIKE', '%' . $id . '%');
+                    return ProjectResource::collection($projectQuery->get());
+                }
+                else {
+                    return "empty";
+                }
+            }
+            else {
+                if (!empty($keyword)) {
+                    $projectQuery->where('name', 'ILIKE', '%' . $keyword . '%');
+                    $projectQuery->orWhere('description', 'ILIKE', '%' . $keyword . '%');
+                }
+                return ProjectResource::collection($projectQuery->get());
+            }
         }
-        return ProjectResource::collection($projectQuery->get());
+        else 
+        {
+            $temp = [];
+            $temp2 = [];
+            $projects_id = DB::select("select distinct project_id from project_users
+            where user_id = ? ",[$currentUser['id']]);
+            foreach ($projects_id as $project) {
+                array_push($temp,$project->project_id);
+            }
+            $projects_id2 = DB::select("select id from projects
+            where author_id = ? ",[$currentUser['id']]);
+            foreach ($projects_id2 as $project) {
+                array_push($temp,$project->id);
+            }
+            $temp2 = array_unique($temp);
+           
+            if($projectDetail == 'OK')
+            {
+                if(!empty($id))
+                {
+                    $projectQuery->where('id', 'ILIKE', '%' . $id . '%');
+                    //$projectQuery->whereIn('id', $temp2);
+                    return ProjectResource::collection($projectQuery->get());
+                }
+                else {
+                    return "empty";
+                }
+            }
+            else {
+                if (!empty($keyword)) {
+                    $projectQuery->where('name', 'ILIKE', '%' . $keyword . '%')->whereIn('id', $temp2);
+                    // $projectQuery->where('name', 'ILIKE', '%' . $keyword . '%');
+                    // $projectQuery->orWhere('description', 'ILIKE', '%' . $keyword . '%');  
+                }
+                else {
+                    $projectQuery->whereIn('id', $temp2);
+                }
+                return ProjectResource::collection($projectQuery->get());
+            }
+
+        }
     }
 
     /**
@@ -78,6 +137,7 @@ class ProjectController extends BaseController
                     'projectStatusActive' => ['required'],
                     'projectTypeStatus' => ['required'],
                     'projectExecutors' => ['required'],
+                    'projectComment' => ['required'],
                 ]
             )
         );
@@ -102,7 +162,9 @@ class ProjectController extends BaseController
                 'main_status_id' => $params['projectTypeStatus'],
                 'type_status' =>  $status_id,
                 'basic_status' =>  $basic_status,
+                'project_level' =>  $params['projectLevel'],
                 'author_id' => $authorId,
+                'status_confirm' => 1,
                 'status' => $params['projectStatusActive'],
             ]);
 
@@ -126,12 +188,42 @@ class ProjectController extends BaseController
                 'project_id' => $projects[0]['id'],
                 'type_status' =>  $status_id,
                 'user_id' => $authorId,
+                'comment_id' => $comment->id,
+                'status_confirm' => 1,
             ]);
 
-            return "ok";
+            return  $comment;
         }
     }
+    public function projectLevelList()
+    {
 
+        $projectLists = ProjectLevel::all();
+        return response()->json(new JsonResponse($projectLists));
+    }
+    public function getProjectAuth($project_id)
+    {
+        $project = Projects::find($project_id)->first();
+        $user = User::find($project->author_id);
+        return response()->json(new JsonResponse(['author_name' => $user]));
+    }
+    public function getProjectMembers($project_id)
+    {
+        $users = DB::select("select  us.name,us.id,us.email from project_users pu
+        left join users us on us.id=pu.user_id
+        where pu.project_id = ? ",[$project_id]);
+        $data = [];
+        foreach ($users as $user) {
+            $row = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ];
+    
+            $data[] = $row;
+        }
+        return response()->json(new JsonResponse( $data));
+    }
     /**
      * Display the specified resource.
      *
@@ -177,6 +269,32 @@ class ProjectController extends BaseController
             $status->save();
             return $status;
         }      
+    }
+    public function addProjectMember(Request $request)
+    {
+     
+        $params = $request->all();
+        if($params['projectId'] != null)
+        {
+            $projectId = $params['projectId'];
+            DB::table('project_users')
+            ->where([
+                ['project_id', $projectId]])
+            ->delete(); 
+
+            $members = $params['projectExecutors'];
+            if($members != null)
+            {
+                foreach($members as $member )
+                {
+                    ProjectUsers::create([
+                        'project_id' =>  $projectId,
+                        'user_id' => $member,
+                    ]);
+                }
+            }
+        }
+        return response()->json(new JsonResponse(['params' => $params]));  
     }
 
     /**

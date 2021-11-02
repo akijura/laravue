@@ -69,6 +69,11 @@ export const constantRoutes = [
     component: () => import('@/views/login/AuthRedirect'),
     hidden: true,
   },
+  // {
+  //   path: '/projects/projectsList/detail',
+  //   component: () => import('@/views/projects/SelfProfile'),
+  //   hidden: true,
+  // },
   {
     path: '/404',
     redirect: { name: 'Page404' },
@@ -118,6 +123,20 @@ export const constantRoutes = [
         meta: { title: 'userProfile', icon: 'user', noCache: true },
       },
     ],
+  },
+  {
+    path: '/detail',
+    component: Layout,
+    redirect: '/detail/edit/:id',
+    children: [
+      {
+        path: 'edit',
+        component: () => import('@/views/projects/ProjectDetails'),
+        name: 'SelfProfile1',
+        meta: { title: 'projectDetail', icon: 'user', noCache: true },
+      },
+    ],
+    hidden: true,
   },
   {
     path: '/guide',

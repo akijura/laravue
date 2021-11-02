@@ -20,6 +20,15 @@ use \App\Laravue\Acl;
 
 Route::namespace('Api')->group(function() {
     Route::post('auth/login', 'AuthController@login');
+    Route::get('/projectLevelList', 'ProjectController@projectLevelList');
+    Route::get('/getProjectAuth/{project_id}', 'ProjectController@getProjectAuth');
+    Route::get('/getProMembers/{project_id}', 'ProjectController@getProjectMembers');
+    Route::get('/downloadFile/{file_name}', 'FilesController@downloadFile')->name('downloadFile');
+    Route::post('/project/addMember', 'ProjectController@addProjectMember');
+    Route::get('/user/{id}', 'UserController@edit');
+    Route::get('/statusConfirm/{id}', 'ProjectReportController@statusConfirm');
+    Route::post('/user/update', 'UserController@updateuser');
+    Route::get('userroles', 'UserController@userroles');
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
         Route::get('auth/user', 'AuthController@user');
@@ -31,11 +40,16 @@ Route::namespace('Api')->group(function() {
 
         // Api resource routes
         Route::apiResource('roles', 'RoleController')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
-        Route::apiResource('users', 'UserController')->middleware('permission:' . Acl::PERMISSION_USER_MANAGE);
+        Route::apiResource('users', 'UserController');
+        // ->middleware('permission:' . Acl::PERMISSION_USER_MANAGE);
         Route::apiResource('main_status', 'MainStatusController');
         Route::apiResource('status', 'StatusController');
         Route::apiResource('project', 'ProjectController');
         Route::apiResource('basicStatus', 'BasicStatusController');
+        Route::apiResource('comments', 'CommentsController');
+        Route::apiResource('files', 'FilesController');
+        Route::apiResource('projectReport', 'ProjectReportController');
+
         Route::apiResource('permissions', 'PermissionController')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
 
         // Custom routes

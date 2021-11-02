@@ -26,7 +26,7 @@ export default {
     },
     defaultMsg: {
       type: String,
-      default: 'Upload image',
+      default: 'Upload files',
     },
     acceptedFiles: {
       type: String,
@@ -34,11 +34,11 @@ export default {
     },
     thumbnailHeight: {
       type: Number,
-      default: 200,
+      default: 120,
     },
     thumbnailWidth: {
       type: Number,
-      default: 200,
+      default: 120,
     },
     showRemoveLink: {
       type: Boolean,
@@ -50,7 +50,7 @@ export default {
     },
     maxFiles: {
       type: Number,
-      default: 3,
+      default: 10,
     },
     autoProcessQueue: {
       type: Boolean,
@@ -73,6 +73,7 @@ export default {
     return {
       dropzone: '',
       initOnce: true,
+
     };
   },
   watch: {
@@ -190,6 +191,7 @@ export default {
       }
     },
     initImages(val) {
+      console.log(this.dropzone);
       if (!val) {
         return;
       }
@@ -232,8 +234,8 @@ i {
 }
 
 .dropzone .dz-image img {
-  width: 100%;
-  height: 100%;
+  width: 50%;
+  height: 50%;
 }
 
 .dropzone input[name='file'] {

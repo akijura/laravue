@@ -28,7 +28,7 @@ class Status extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'status','main_status_id','queue','basic_status'
+        'name', 'description', 'status','main_status_id','queue','basic_status','percent'
     ];
     protected $table = 'types_status';
 

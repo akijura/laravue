@@ -9,7 +9,7 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" style="margin-left: 10px;" @click="handleFilter">
             {{ $t('table.search') }}
           </el-button>
-          <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">
+          <el-button class="filter-item" style="margin-left: 10px;" v-role="['admin','moderator']" type="primary" icon="el-icon-plus" @click="handleCreate">
             {{ $t('table.add') }}
           </el-button>
         </div>
@@ -22,8 +22,14 @@
           {{ $t('projects.todo') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div v-for="todo in todoList" :key="todo.id" class="component-item-project">
+          <div v-for="todo in todoList" :key="todo.id" class="component-item-project" @click="getProjectId(todo.id)">
             {{ todo.name }}
+             <div class="pull-right">
+               <el-tag class="tag-title" :type="todo.level | statusFilter">
+                   {{todo.level_name}}
+              </el-tag>
+               </div>
+      
           </div>
         </div>
       </el-col>
@@ -32,8 +38,13 @@
           {{ $t('projects.working') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div v-for="working in workingList" :key="working.id" class="component-item-project">
+          <div v-for="working in workingList" :key="working.id" class="component-item-project" @click="getProjectId(working.id)">
             {{ working.name }}
+            <div class="pull-right">
+               <el-tag class="tag-title" :type="working.level | statusFilter">
+                   {{working.level_name}}
+              </el-tag>
+               </div>
           </div>
         </div>
 
@@ -43,8 +54,13 @@
           {{ $t('projects.done') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div v-for="done in doneList" :key="done.id" class="component-item-project">
+          <div v-for="done in doneList" :key="done.id" class="component-item-project"  @click="getProjectId(done.id)">
             {{ done.name }}
+            <div class="pull-right">
+               <el-tag class="tag-title" :type="done.level | statusFilter">
+                   {{done.level_name}}
+              </el-tag>
+               </div>
           </div>
         </div>
       </el-col>
@@ -53,8 +69,13 @@
           {{ $t('projects.cancelled') }}
         </div>
         <div class="component-item" style="min-height: calc(100vh - 84px);">
-          <div v-for="cancel in cancelledList" :key="cancel.id" class="component-item-project">
+          <div v-for="cancel in cancelledList" :key="cancel.id" class="component-item-project" @click="getProjectId(cancel.id)">
             {{ cancel.name }}
+            <div class="pull-right">
+               <el-tag class="tag-title" :type="cancel.level | statusFilter">
+                   {{cancel.level_name}}
+              </el-tag>
+               </div>
           </div>
         </div>
 
@@ -98,7 +119,12 @@
               <el-option v-for="status in listMainStatus" :key="status.id" :value="status.id" :label="status.name" class="filter-item" />
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('projects.projectComment')">
+          <el-form-item :label="$t('projects.project_level')" type="textarea" prop="project_level">
+            <el-select v-model="createProjectForm.projectLevel" placeholder="please select" style="width: 100%;">
+              <el-option v-for="level in projectLevels" :key="level.id" :value="level.id" :label="level.name" class="filter-item" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('projects.projectComment')"  prop="projectComment">
             <el-input v-model="createProjectForm.projectComment" type="textarea" />
           </el-form-item>
           <el-form-item :label="$t('main_status.status')">
@@ -123,6 +149,9 @@
         </div>
       </div>
     </el-dialog>
+    <el-tooltip placement="top" :content="$t('projects.up')">
+      <back-to-top :custom-style="myBackToTopStyle" :visibility-height="30" :back-position="50" transition-name="fade" />
+    </el-tooltip>
   </div>
 
 </template>
@@ -133,6 +162,10 @@ import UserResource from '@/api/user';
 import MainStatusResource from '@/api/main_status';
 import ProjectResource from '@/api/project';
 import Fuse from 'fuse.js';
+import { fetchProjectLevelList } from '@/api/project';
+import BackToTop from '@/components/BackToTop';
+import permission from '@/directive/permission'; // Permission directive
+import role from '@/directive/role'; // Permission directive (v-role)
 import path from 'path';
 
 const mainStatusResource = new MainStatusResource();
@@ -140,14 +173,38 @@ const userResource = new UserResource();
 const projectResource = new ProjectResource();
 export default {
   name: 'ComponentMixinDemo',
+  name: 'BackToTopDemo',
+  components: { BackToTop },
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        1: 'warning',
+        2: 'primary',
+        3: 'danger',
+      };
+      return statusMap[status];
+    },
+  },
   directives: {
     waves,
+    permission,
+    role
   },
   data() {
     return {
       query: {
         keyword: '',
       },
+      myBackToTopStyle: {
+        right: '50px',
+        bottom: '50px',
+        width: '40px',
+        height: '40px',
+        'border-radius': '4px',
+        'line-height': '45px', // Please keep consistent with height to center vertically
+        background: '#e7eaf1', // The background color of the button
+      },
+      projectLevels: [],
       search: '',
       options: [],
       searchPool: [],
@@ -167,7 +224,7 @@ export default {
         projectTypeStatus: '',
         projectExecutors: '',
         projectComment: '',
-
+        projectLevel: '',
       },
       rules: {
         projectName: [{ required: true, message: 'Project name is required', trigger: 'blur' }],
@@ -175,6 +232,7 @@ export default {
         projectBeginDate: [{ required: true, message: 'Project pariod is required', trigger: 'blur' }],
         projectExecutors: [{ required: true, message: 'Project executors is required', trigger: 'blur' }],
         projectTypeStatus: [{ required: true, message: 'Status is required', trigger: 'blur' }],
+        projectComment: [{ required: true, message: 'Project comment is required', trigger: 'blur' }],
       },
       options: {
         group: 'mission',
@@ -250,6 +308,11 @@ export default {
         this.show = false;
       });
     },
+    getProjectId(id) {
+      localStorage.setItem('projectId', id);
+      const projectId = id;
+      this.$router.push({ name: 'SelfProfile1', params: { projectId }});
+    },
     handleFilter() {
       this.todoList = [],
       this.workingList = [],
@@ -258,10 +321,14 @@ export default {
       this.getListProject();
     },
     async getListProject(){
+      this.todoList = [];
+      this.workingList = [];
+      this.doneList = [];
+      this.cancelledList = [];
       this.loading = true;
       const { data } = await projectResource.list(this.query);
+      console.log(data);
       this.projectList = data;
-      console.log(this.projectList.length);
       if (this.projectList.length === 0) {
         this.todoList = [];
         this.workingList = [];
@@ -279,6 +346,8 @@ export default {
               main_status_id: project['main_status_id'],
               name: project['name'],
               status: project['status'],
+              level: project['level'],
+              level_name: project['level_name'],
             });
           } else if (project['basic_status'] === 2) {
             this.workingList.push({
@@ -290,6 +359,8 @@ export default {
               main_status_id: project['main_status_id'],
               name: project['name'],
               status: project['status'],
+              level: project['level'],
+              level_name: project['level_name'],
             });
           } else if (project['basic_status'] === 3) {
             this.doneList.push({
@@ -301,6 +372,8 @@ export default {
               main_status_id: project['main_status_id'],
               name: project['name'],
               status: project['status'],
+              level: project['level'],
+              level_name: project['level_name'],
             });
           } else {
             this.cancelledList.push({
@@ -312,23 +385,30 @@ export default {
               main_status_id: project['main_status_id'],
               name: project['name'],
               status: project['status'],
+              level: project['level'],
+              level_name: project['level_name'],
             });
           }
         });
       }
 
-      console.log(this.todoList);
       this.loading = false;
     },
+
     handleCreate() {
       this.dialogFormVisible = true;
       this.loadingCreateProject = true;
       this.getListUsers();
-      // this.getListStatus();
+      this.getListStatus();
+      this.getProjectLevelList();
       // this.$nextTick(() => {
       //   this.$refs['createProjectForm'].clearValidate();
       // });
       this.loadingCreateProject = false;
+    },
+    async getProjectLevelList() {
+      const { data } = await fetchProjectLevelList();
+      this.projectLevels = data;
     },
     async getListUsers() {
       const { data } = await userResource.list();
@@ -337,6 +417,19 @@ export default {
     async getListStatus() {
       const { data } = await mainStatusResource.list();
       this.listMainStatus = data.main_statuses;
+    },
+    resetNewProject() {
+        this.createProjectForm = {
+        projectName: '',
+        projectDescription: '',
+        projectBeginDate: '',
+        projectEndDate: '',
+        projectStatusActive: 1,
+        projectTypeStatus: '',
+        projectExecutors: '',
+        projectComment: '',
+        projectLevel: '',
+      };
     },
     createProject() {
       this.$refs['createProjectForm'].validate((valid) => {
@@ -351,18 +444,22 @@ export default {
                 type: 'success',
                 duration: 5 * 1000,
               });
+              this.resetNewProject();
             })
             .catch(error => {
               console.log(error);
             })
             .finally(() => {
               this.loadingCreateProject = false;
+              this.dialogFormVisible = false;
+             
             });
         } else {
           console.log('error submit!!');
           return false;
         }
       });
+      this.getListProject();
     },
   },
 };

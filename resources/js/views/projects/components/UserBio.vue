@@ -4,24 +4,24 @@
       <span>{{ $t('projects.about') }}</span>
     </div>
     <div class="user-education user-bio-section">
-      <div class="user-bio-section-header" v-loading="loading">
+      <div v-loading="loading" class="user-bio-section-header">
         <svg-icon icon-class="education" />
         <span> {{ $t('projects.deadline') }}</span>
       </div>
       <div class="user-bio-section-body">
         <div style="margin-top: 5px;margin-bottom: 5px; color: red;">
-        {{ $t('projects.priority') }}: {{ this.projectDetails.level_name }}
+          {{ $t('projects.priority') }}: {{ this.projectDetails.level_name }}
         </div>
         <div class="text-muted">
-        {{ $t('projects.from') }} {{ this.projectDetails.begin_date }} {{ $t('projects.to') }} {{ this.projectDetails.end_date }}
+          {{ $t('projects.from') }} {{ this.projectDetails.begin_date }} {{ $t('projects.to') }} {{ this.projectDetails.end_date }}
         </div>
-      <div style="margin-top: 5px;">
-        {{ $t('projects.dayspro') }}: {{ this.projectDetails.interval }}
+        <div style="margin-top: 5px;">
+          {{ $t('projects.dayspro') }}: {{ this.projectDetails.interval }}
         </div>
-     <div style="margin-top: 5px; color: red;">
-        {{ $t('projects.raminedays') }}: {{ this.projectDetails.remained }}
+        <div style="margin-top: 5px; color: red;">
+          {{ $t('projects.raminedays') }}: {{ this.projectDetails.remained }}
         </div>
-        
+
       </div>
     </div>
     <div class="user-skills user-bio-section">
@@ -31,7 +31,7 @@
       </div>
       <div class="user-bio-section-body">
         <div class="progress-item">
-          <el-progress :percentage="Number(this.percent)"/>
+          <el-progress :percentage="Number(this.percent)" />
         </div>
       </div>
     </div>
@@ -42,22 +42,22 @@
       </div>
       <div class="user-bio-section-body">
         <div class="box-social">
-        <el-table :data="listStatutes" :show-header="false" border>
-          <el-table-column prop="status_name" label="status_name" />
-          <el-table-column prop="basic_status_name" label="basic_status_name" />
-          <el-table-column prop="created_at" label="created_at" />
-          <el-table-column prop="author" label="author" /> 
-         
-        <el-table-column align="center" width="145" class="text-center" >
-        <template slot-scope="scope">
-        
-          <el-button :disabled="scope.row.isActive" size="small" :type="scope.row.status_confirm | statusFilter" >
-            {{ $t('projects.' + scope.row.text_confirm) }}
-            </el-button>
-        </template>
-        </el-table-column>
-        </el-table>
-      </div>
+          <el-table :data="listStatutes" :show-header="false" border>
+            <el-table-column prop="status_name" label="status_name" />
+            <el-table-column prop="basic_status_name" label="basic_status_name" />
+            <el-table-column prop="created_at" label="created_at" />
+            <el-table-column prop="author" label="author" />
+
+            <el-table-column align="center" width="145" class="text-center">
+              <template slot-scope="scope">
+
+                <el-button :disabled="scope.row.isActive" size="small" :type="scope.row.status_confirm | statusFilter">
+                  {{ $t('projects.' + scope.row.text_confirm) }}
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
     </div>
   </el-card>
@@ -66,16 +66,12 @@
 <script>
 import ProjectResource from '@/api/project';
 import ProjectReportResource from '@/api/projectReport';
-import { updateStatusConfirm} from '@/api/projectReport';
+import { updateStatusConfirm } from '@/api/projectReport';
 
 const projectResource = new ProjectResource();
 const projectReportResource = new ProjectReportResource();
 
 export default {
-    created() {
-      this.getListProject();
-      this.getProjectReport();
-    },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -85,7 +81,7 @@ export default {
       return statusMap[status];
     },
   },
-    data() {
+  data() {
     return {
       query: {
         id: '',
@@ -93,22 +89,26 @@ export default {
       },
       projectDetails: [],
       loading: false,
-      percent: "",
+      percent: '',
       listStatutes: [],
       queryStatus: {
         projectId: '',
-      }
-      }
-    },
-      methods: {
-      async getListProject(){
+      },
+    };
+  },
+  created() {
+    this.getListProject();
+    this.getProjectReport();
+  },
+  methods: {
+    async getListProject(){
       const projectId = localStorage.getItem('projectId');
       this.projectDetails = [];
       this.query.id = projectId;
       this.query.projectDetail = 'OK';
       this.loading = true;
       const { data } = await projectResource.list(this.query);
-        
+
       this.projectDetails = data[0];
       this.percent = Number(this.projectDetails.percent);
       this.loading = false;
@@ -142,78 +142,70 @@ export default {
       this.queryStatus.projectId = projectId;
       const { data } = await projectReportResource.list(this.queryStatus);
       console.log(data);
-      data.forEach((status) => {  
-        if(status['status_confirm'] === 1)
-        {
-        if(status['user_role'] === 'admin' || status['user_role'] === 'moderator')
-        {
-          this.listStatutes.push({
-            isActive: false,
-            id: status['id'],
-            status_id: status['status_id'],
-            project_id: status['project_id'],
-            status_name: status['status_name'],
-            basic_status_name: status['basic_status_name'],
-            status_confirm: status['status_confirm'],
-            created_at: status['created_at'],
-            author: status['author'],
-            text_confirm: 'confirmed',
-          });
+      data.forEach((status) => {
+        if (status['status_confirm'] === 1) {
+          if (status['user_role'] === 'admin' || status['user_role'] === 'moderator') {
+            this.listStatutes.push({
+              isActive: false,
+              id: status['id'],
+              status_id: status['status_id'],
+              project_id: status['project_id'],
+              status_name: status['status_name'],
+              basic_status_name: status['basic_status_name'],
+              status_confirm: status['status_confirm'],
+              created_at: status['created_at'],
+              author: status['author'],
+              text_confirm: 'confirmed',
+            });
+          } else {
+            this.listStatutes.push({
+              isActive: true,
+              id: status['id'],
+              status_id: status['status_id'],
+              project_id: status['project_id'],
+              status_name: status['status_name'],
+              basic_status_name: status['basic_status_name'],
+              status_confirm: status['status_confirm'],
+              created_at: status['created_at'],
+              author: status['author'],
+              text_confirm: 'confirmed',
+            });
+          }
+        } else {
+          if (status['user_role'] === 'admin' || status['user_role'] === 'moderator') {
+            this.listStatutes.push({
+              isActive: false,
+              id: status['id'],
+              status_id: status['status_id'],
+              project_id: status['project_id'],
+              status_name: status['status_name'],
+              basic_status_name: status['basic_status_name'],
+              status_confirm: status['status_confirm'],
+              created_at: status['created_at'],
+              author: status['author'],
+              text_confirm: 'not_confirmed',
+            });
+          } else {
+            this.listStatutes.push({
+              isActive: true,
+              id: status['id'],
+              status_id: status['status_id'],
+              project_id: status['project_id'],
+              status_name: status['status_name'],
+              basic_status_name: status['basic_status_name'],
+              status_confirm: status['status_confirm'],
+              created_at: status['created_at'],
+              author: status['author'],
+              text_confirm: 'not_confirmed',
+            });
+          }
         }
-        else {
-        this.listStatutes.push({
-            isActive: true,
-            id: status['id'],
-            status_id: status['status_id'],
-            project_id: status['project_id'],
-            status_name: status['status_name'],
-            basic_status_name: status['basic_status_name'],
-            status_confirm: status['status_confirm'],
-            created_at: status['created_at'],
-            author: status['author'],
-            text_confirm: 'confirmed',
-          });
-        }
-        }
-        else
-        {
-        if(status['user_role'] === 'admin' || status['user_role'] === 'moderator')
-        {
-          this.listStatutes.push({
-            isActive: false,
-            id: status['id'],
-            status_id: status['status_id'],
-            project_id: status['project_id'],
-            status_name: status['status_name'],
-            basic_status_name: status['basic_status_name'],
-            status_confirm: status['status_confirm'],
-            created_at: status['created_at'],
-            author: status['author'],
-            text_confirm: 'not_confirmed',
-          });
-        }
-        else {
-          this.listStatutes.push({
-            isActive: true,
-            id: status['id'],
-            status_id: status['status_id'],
-            project_id: status['project_id'],
-            status_name: status['status_name'],
-            basic_status_name: status['basic_status_name'],
-            status_confirm: status['status_confirm'],
-            created_at: status['created_at'],
-            author: status['author'],
-            text_confirm: 'not_confirmed',
-          });
-        }
-        }
-
-       });
-       console.log(this.listStatutes);
+      });
+      console.log(this.listStatutes);
       this.loading = false;
     },
-    
-      }
+
+  },
 };
 </script>
 

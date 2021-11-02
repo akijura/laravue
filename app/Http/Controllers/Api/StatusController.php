@@ -46,7 +46,8 @@ class StatusController extends BaseController
             $result = DB::select("select ts.*, bs.basic_status_name,bs.id as basic_id from types_status ts
             left join basic_status bs on bs.id=ts.basic_status
             where ts.main_status_id = ? order by ts.queue ASC",[$searchParams[0]]);
-       
+            $currentUser = Auth::user();
+            $current = $currentUser->roles[0]['name'];
 
  
         $data = [];
@@ -57,9 +58,11 @@ class StatusController extends BaseController
                 'description' => $status->description,
                 'queue' => $status->queue,
                 'status' => $status->status,
+                'current_role' => $current,
                 'basic_status_id' => $status->basic_id,
                 'basic_status_name' => $status->basic_status_name,
                 'main_status_id' => $status->main_status_id,
+                'percent' => $status->percent,
             ];
     
             $data[] = $row;
@@ -84,6 +87,7 @@ class StatusController extends BaseController
                     'statusName' => ['required', 'max:50'],
                     'mainStatusId' => ['required'],
                     'basicStatus' => ['required'],
+                    'percent' => ['required'],
                 ]
             )
         );
@@ -137,6 +141,7 @@ class StatusController extends BaseController
                 'queue' => $params['statusQueue'],
                 'main_status_id' => $params['mainStatusId'],
                 'basic_status' => $params['basicStatus'],
+                'percent' => $params['percent'],
             ]);
 
 
@@ -201,10 +206,11 @@ class StatusController extends BaseController
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $statuses = Status::all();
+           
             if($params['editStatusQueue'] === null)
             {
                 
-                if($statuses->isEmpty() == false)
+                if($statuses->isEmpty())
                 {
                     $validator = Validator::make(
                         $request->all(),
@@ -225,27 +231,39 @@ class StatusController extends BaseController
                 }
             }
             else {
-                $params['editStatusQueue'] = $params['editStatusQueue'] + 1;
-            }
-            $queueUpdate = DB::select("select ts.id,ts.queue from types_status ts
-            where ts.main_status_id = ? and ts.queue >= ?",[$params['editMainStatusId'],$params['editStatusQueue']]);
-            if($queueUpdate != null)
-            {
-                foreach($queueUpdate as $queue)
+                $current_status = Status::find( $params['editId']);
+                if($current_status->queue > $params['editStatusQueue'])
                 {
-                    $queueFind = Status::find($queue->id);
-                    $queueFind->queue = $queueFind->queue + 1;
-                    $queueFind->update();
+                    $params['editStatusQueue'] = $params['editStatusQueue'] + 1;
                 }
-            }
+           
+                $updateSecond = Status::where(['main_status_id' => $params['editMainStatusId'],'queue' => $params['editStatusQueue']])
+                ->update(['queue' => $current_status->queue]);
 
-            $status->name = $params['editName'];
-            $status->description = $params['editDescription'];
-            $status->status = $params['editActive'];
-            $status->queue = $params['editStatusQueue'];
-            $status->main_status_id = $params['editMainStatusId'];
-            $status->basic_status = $params['editBasicStatus'];
-            $status->save();
+                $updateFirst = Status::where(['id' => $current_status->id])
+                ->update(['queue' => $params['editStatusQueue']]);
+            }
+            // return $params['editStatusQueue'];
+            // $queueUpdate = DB::select("select ts.id,ts.queue from types_status ts
+            // where ts.main_status_id = ? and ts.queue > ?",[$params['editMainStatusId'],$params['editStatusQueue']]);
+            // if($queueUpdate != null)
+            // {
+            //     foreach($queueUpdate as $queue)
+            //     {
+            //         $queueFind = Status::find($queue->id);
+            //         $queueFind->queue = $queueFind->queue + 1;
+            //         $queueFind->update();
+            //     }
+            // }
+
+            // $status->name = $params['editName'];
+            // $status->description = $params['editDescription'];
+            // $status->status = $params['editActive'];
+            // $status->queue = $params['editStatusQueue'];
+            // $status->main_status_id = $params['editMainStatusId'];
+            // $status->basic_status = $params['editBasicStatus'];
+            // $status->percent = $params['editPercent'];
+            // $status->save();
             return $status;
         }      
     }
@@ -290,13 +308,31 @@ class StatusController extends BaseController
      */
     public function destroy(Status $status)
     {
-        try {
-            $status->delete();
-        } catch (\Exception $ex) {
-            return response()->json(['error' => $ex->getMessage()], 403);
+        $check_project = DB::select("select  * from projects where type_status = ? ",[$status->id]);
+        if($check_project == null)
+        {
+            try {
+                $status->delete();
+            } catch (\Exception $ex) {
+                return response()->json(['error' => $ex->getMessage()], 403);
+            }
+    
+            $temp_queue = $status->queue;
+            $statutes = DB::select("select  * from types_status where queue > ? ",[$temp_queue]);
+            foreach($statutes as $sta)
+            {
+                $queueUpdate = Status::find($sta->id);
+                $queueUpdate->queue = $queueUpdate->queue - 1;
+                $queueUpdate->update();
+            }
+      
+            return $status;
+        }
+        else 
+        {
+            return response()->json(['error' => "Can not delete this status,it has been used for projects"], 403);
         }
 
-        return response()->json(null, 204);
     }
 
     /**

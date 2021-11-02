@@ -51,6 +51,7 @@ export default {
     },
     handleSubmit() {
       const arr = Object.keys(this.listObj).map(v => this.listObj[v]);
+      console.log(arr);
       if (!this.checkAllSuccess()) {
         this.$message('Please wait for all images to be uploaded successfully or there is a network problem, please refresh the page and re-upload!');
         return;

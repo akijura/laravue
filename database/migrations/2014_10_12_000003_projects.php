@@ -24,6 +24,7 @@ class Projects extends Migration
             $table->integer('author_id')->nullable(false);
             $table->integer('basic_status')->nullable(false);
             $table->integer('project_level')->default(1);
+            $table->integer('status_confirm')->default(0);
             $table->integer('status')->default(1);
             $table->timestamps();
         });

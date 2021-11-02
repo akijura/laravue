@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $project_id
  * @property integer $type_status
  * @property integer $user_id
+ * @property integer $comment_id
  *  
  *
  * @method static ProjectReport create(array $reports)
@@ -26,7 +27,7 @@ class ProjectReport extends Model
      * @var array
      */
     protected $fillable = [
-        'project_id', 'type_status', 'user_id',
+        'project_id', 'type_status', 'user_id','created_at','comment_id','status_confirm',
     ];
     protected $table = 'project_report';
 
