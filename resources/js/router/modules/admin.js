@@ -30,9 +30,24 @@ const adminRoutes = {
     /** Notification */
     {
       path: 'notifications',
-      component: () => import('@/views/role-permission/List'),
+      redirect: 'notifications/user-credentials',
       name: 'NotificationList',
+      alwaysShow: true,
       meta: { title: 'Notifications', icon: 'guide', permissions: ['manage permission'] },
+      children: [
+        {
+          path: 'user-credentials',
+          name: 'UserCredentialList',
+          component: () => import('@/views/users/List'),
+          meta: { title: 'User credentials', icon: 'peoples', permissions: ['manage permission'] },
+        },
+        {
+          path: 'channels',
+          name: 'NotificationChannels',
+          component: () => import('@/views/notifications/List'),
+          meta: { title: 'Channels', icon: 'international', permissions: ['manage permission'] },
+        },
+      ],
     },
     /** Role and permission */
     {
