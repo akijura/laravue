@@ -18,7 +18,7 @@ class NotificationChannelController extends Controller
      */
     public function index()
     {
-        return  NotificationChannelResource::collection(NotificationChannel::all());        
+        return  NotificationChannelResource::collection(NotificationChannel::all());
     }
 
     /**
@@ -34,11 +34,11 @@ class NotificationChannelController extends Controller
             'api_link' => 'required',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        if($validator->validated()) {
+        if ($validator->validated()) {
             NotificationChannel::create([
                 'name' => $validator->validated()['name'],
                 'api_link' => $validator->validated()['api_link'],
@@ -56,7 +56,19 @@ class NotificationChannelController extends Controller
      */
     public function show($id)
     {
-        //
+        $channel = NotificationChannel::find($id);
+
+        if ($channel === null) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "data" => ["error" => "Channel not found"]
+                ],
+                404
+            );
+        }
+
+        return (new NotificationChannelResource($channel));
     }
 
     /**
@@ -68,7 +80,37 @@ class NotificationChannelController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(['name', 'api_link']), [
+            'name' => 'required',
+            'api_link' => 'required',
+        ]);
+
+        $channel = null;
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $channel = NotificationChannel::find($id);
+
+        if ($channel === null) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "data" => ["error" => "Channel not found"]
+                ],
+                404
+            );
+        }
+
+        if ($validator->validated() && $channel !== null) {
+            $channel->name = $validator->validated()['name'];
+            $channel->api_link = $validator->validated()['api_link'];
+
+            $channel->save();
+
+            return response()->json(['message' => 'Notification channel successfully updated!'], 200);
+        }
     }
 
     /**
@@ -79,6 +121,24 @@ class NotificationChannelController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $channel = NotificationChannel::find($id);
+
+        if ($channel === null) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "data" => ["error" => "Notification channel not found"]
+                ],
+                404
+            );
+        }
+
+        if($channel->delete()) {
+            return response()
+            ->json(['message' => 'Notification channel successfully deleted!'], 200);
+        }
+
+        return  response()
+        ->json(['message' => 'Oops, unexpected error'], 400);
     }
 }

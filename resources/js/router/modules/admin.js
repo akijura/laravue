@@ -27,28 +27,6 @@ const adminRoutes = {
       name: 'UserList',
       meta: { title: 'users', icon: 'user', permissions: ['manage user'] },
     },
-    /** Notification */
-    {
-      path: 'notifications',
-      redirect: 'notifications/user-credentials',
-      name: 'NotificationList',
-      alwaysShow: true,
-      meta: { title: 'Notifications', icon: 'guide', permissions: ['manage permission'] },
-      children: [
-        {
-          path: 'user-credentials',
-          name: 'UserCredentialList',
-          component: () => import('@/views/users/List'),
-          meta: { title: 'User credentials', icon: 'peoples', permissions: ['manage permission'] },
-        },
-        {
-          path: 'channels',
-          name: 'NotificationChannels',
-          component: () => import('@/views/notifications/List'),
-          meta: { title: 'Channels', icon: 'international', permissions: ['manage permission'] },
-        },
-      ],
-    },
     /** Role and permission */
     {
       path: 'roles',

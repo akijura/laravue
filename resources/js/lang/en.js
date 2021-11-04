@@ -257,4 +257,8 @@ export default {
     'not_confirmed': 'Not confirmed',
 
   },
+  notification: {
+    'channelName': 'Name',
+    'channelApiLink': 'API Link',
+  },
 };

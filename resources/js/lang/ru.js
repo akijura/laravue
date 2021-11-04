@@ -256,4 +256,9 @@ export default {
     'confirmed': 'Подтверждено',
     'not_confirmed': 'Не подтверждено',
   },
+
+  notification: {
+    'channelName': 'Название',
+    'channelApiLink': 'Ссылка для API',
+  },
 };

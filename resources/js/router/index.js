@@ -23,6 +23,7 @@ import nestedRoutes from './modules/nested';
 import errorRoutes from './modules/error';
 import excelRoutes from './modules/excel';
 import permissionRoutes from './modules/permission';
+import notifiactionRoutes  from './modules/notification';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -155,6 +156,7 @@ export const constantRoutes = [
 ];
 
 export const asyncRoutes = [
+  notifiactionRoutes,
   permissionRoutes,
   componentRoutes,
   projectsRoutes,
