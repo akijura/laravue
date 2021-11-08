@@ -1,79 +1,145 @@
 <template>
   <div class="app-container">
-    <el-table
-      :data="tableData"
-      :span-method="objectSpanMethod"
-      border
-      style="width: 100%; margin-top: 20px"
-    >
-      <el-table-column prop="id" label="ID" width="180" />
-      <el-table-column prop="name" label="User" />
-      <el-table-column prop="amount1" label="Channel" />
-      <el-table-column prop="amount2" label="Credential" />
-      <el-table-column prop="amount3" label="Action" />
-    </el-table>
+    <div v-for="(user, index) in list" :key="index">
+      <el-card class="box-card mt-4">
+        <div slot="header" class="clearfix">
+          <span icon>{{ user.name }}</span>
+          <el-button
+            style="float: right"
+            type="primary"
+            icon="el-icon-plus"
+            @click="handleCreateForm(user.id, user.name)"
+          >Add new credential</el-button>
+        </div>
+        <div>
+          <el-table
+            :data="user.notification_credentials"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column align="center" label="ID" width="80">
+              <template slot-scope="scope">
+                <span>{{ scope.row.id }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="Channel name">
+              <template slot-scope="scope">
+                <span>{{ scope.row.channel.name }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="Identifier">
+              <template slot-scope="scope">
+                <span>{{ scope.row.identifier }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="Actions" width="350">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  size="small"
+                  icon="el-icon-delete"
+                  @click="handleDelete(scope.row.id, scope.row.name)"
+                >
+                  Delete
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-card>
+
+      <el-dialog
+        :title="userCredentialFormTitle"
+        :visible.sync="userCredentialFormVisible"
+      >
+        <div class="form-container">
+          <el-form
+            ref="userCredentialForm"
+            :model="currentUserCredential"
+            label-position="left"
+            label-width="150px"
+            style="max-width: 400px"
+          >
+            <el-form-item label="Channel">
+              <el-select v-model="chosenChannel" placeholder="Select">
+                <el-option
+                  v-for="channel in channels"
+                  :key="channel.id"
+                  :label="channel.name"
+                  :value="channel.id"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Identifier" prop="description">
+              <el-input v-model="currentUserCredential.id" type="input" />
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="userCredentialFormVisible = false">
+              Cancel
+            </el-button>
+            <el-button type="primary" @click="handleSubmit()">
+              Confirm
+            </el-button>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
 <script>
+import Resource from '@/api/resource';
+const channelResource = new Resource('channels');
+const userCredentialResource = new Resource('user-credentials');
+
 export default {
+  name: 'UserCredentials',
   data() {
     return {
-      tableData: [
-        {
-          id: '12987122',
-          name: 'Tom',
-          amount1: '234',
-          amount2: '3.2',
-          amount3: 10,
-        },
-        {
-          id: '12987123',
-          name: 'Tom',
-          amount1: '165',
-          amount2: '4.43',
-          amount3: 12,
-        },
-        {
-          id: '12987124',
-          name: 'Tom',
-          amount1: '324',
-          amount2: '1.9',
-          amount3: 9,
-        },
-        {
-          id: '12987125',
-          name: 'Tom',
-          amount1: '621',
-          amount2: '2.2',
-          amount3: 17,
-        },
-        {
-          id: '12987126',
-          name: 'Tom',
-          amount1: '539',
-          amount2: '4.1',
-          amount3: 15,
-        },
-      ],
+      list: [],
+      channels: [],
+      currentUser: null,
+      chosenChannel: 1,
+      userCredentialFormTitle: '',
+      userCredentialFormVisible: false,
+      currentUserCredential: {},
     };
   },
+  created() {
+    this.getList();
+    this.getChannels();
+  },
   methods: {
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 0) {
-        if (rowIndex % 2 === 0) {
-          return {
-            rowspan: 2,
-            colspan: 1,
-          };
-        } else {
-          return {
-            rowspan: 0,
-            colspan: 0,
-          };
-        }
-      }
+    async getList() {
+      const { data } = await userCredentialResource.list({});
+      this.list = data;
+      console.log(this.list);
+    },
+
+    async getChannels() {
+      const { data } = await channelResource.list({});
+      this.channels = data;
+    },
+
+    handleSubmit() {},
+    handleCreateForm(currenUserId, currentUserName) {
+      this.currentUser = currenUserId;
+      this.userCredentialFormTitle =
+        'New user credential for ' + currentUserName;
+      this.userCredentialFormVisible = true;
+      this.currentUserCredential = {
+        identifier: '',
+      };
     },
   },
 };
 </script>
+<style scoped>
+.mt-4 {
+  margin-top: 1rem;
+}
+</style>

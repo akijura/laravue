@@ -19,11 +19,11 @@ class NotificationCredentialController extends Controller
      */
     public function index()
     {
-        $users = User::select('id', 'name')->get();
+        $users = User::select('id','name')
+                       ->with('notificationCredentials', 'notificationCredentials.channel')
+                       ->get();
 
-        $channels = NotificationChannel::select('id', 'name')->get();
-
-        $credentials = NotificationCredential::select('id','user_id', 'channel_id')->get();
+      return response()->json(['data' => $users]);
     }
 
     /**
