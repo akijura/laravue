@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use App\Listeners\SendTelegramNotification;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Event;
+use App\Events\ProjectCreated;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,10 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+
+        ProjectCreated::class => [
+            SendTelegramNotification::class,
         ],
     ];
 

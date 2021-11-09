@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Laravue\Models\NotificationChannel;
 use App\Laravue\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class NotificationCredentialController extends Controller
 {
@@ -34,7 +35,25 @@ class NotificationCredentialController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(['channel_id','user_id','identifier']), [
+            'user_id' => ['required', 'numeric'],
+            'channel_id' => ['required', 'numeric'],
+            'identifier' => ['required', 'string'],
+        ]);
+
+        if($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 403);
+        }
+
+        $validated = $validator->validated();
+
+        NotificationCredential::create([            
+            'user_id' => $validated['user_id'],
+            'channel_id' => $validated['channel_id'],
+            'identifier' => $validated['identifier'],
+        ]);
+
+        return response()->json(['message' => 'Notification credential successfully created!'], 200);
     }
 
     /**

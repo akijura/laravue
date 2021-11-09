@@ -64,7 +64,10 @@
             style="max-width: 400px"
           >
             <el-form-item label="Channel">
-              <el-select v-model="chosenChannel" placeholder="Select">
+              <el-select
+                v-model="currentUserCredential.channel_id"
+                placeholder="Select"
+              >
                 <el-option
                   v-for="channel in channels"
                   :key="channel.id"
@@ -74,7 +77,10 @@
               </el-select>
             </el-form-item>
             <el-form-item label="Identifier" prop="description">
-              <el-input v-model="currentUserCredential.id" type="input" />
+              <el-input
+                v-model="currentUserCredential.identifier"
+                type="input"
+              />
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -102,7 +108,8 @@ export default {
     return {
       list: [],
       channels: [],
-      currentUser: null,
+      currentUserId: null,
+      currentUserName: '',
       chosenChannel: 1,
       userCredentialFormTitle: '',
       userCredentialFormVisible: false,
@@ -125,13 +132,41 @@ export default {
       this.channels = data;
     },
 
-    handleSubmit() {},
-    handleCreateForm(currenUserId, currentUserName) {
-      this.currentUser = currenUserId;
+    handleSubmit() {
+      userCredentialResource
+        .store(this.currentUserCredential)
+        .then((response) => {
+          this.$message({
+            message:
+              'New user credential for ' +
+              this.currentUserName +
+              ' successfully added!',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+
+          this.currentUserCredential = {
+            user_id: null,
+            channel_id: null,
+            identifier: '',
+          };
+
+          this.userCredentialFormVisible = false;
+          this.getList();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    handleCreateForm(currentUserId, currentUserName) {
+      this.currentUserId = currentUserId;
       this.userCredentialFormTitle =
         'New user credential for ' + currentUserName;
+      this.currentUserName = currentUserName;
       this.userCredentialFormVisible = true;
       this.currentUserCredential = {
+        user_id: this.currentUserId,
+        channel_id: '',
         identifier: '',
       };
     },
