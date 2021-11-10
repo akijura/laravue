@@ -9,8 +9,7 @@
 
 namespace App\Http\Controllers\Api;
 
-
-
+use App\Events\ProjectStatusChanged;
 use App\Laravue\JsonResponse;
 
 use App\Laravue\Models\User;
@@ -61,8 +60,9 @@ class FilesController extends BaseController
         if($project_id != null && $comment != null && $status_id != null)
         {
             $type_status = Status::find($status_id);
-            $project = Projects::where('id', $project_id)
-            ->update(['type_status' => $status_id, 'basic_status' => $type_status->basic_status]);
+            $project = Projects::where('id', $project_id)->get()[0];
+            $old_status = Status::find($project->type_status);
+            $project->update(['type_status' => $status_id, 'basic_status' => $type_status->basic_status]);
             
             $currentUser = Auth::user();
             $authorId = $currentUser['id'];
@@ -77,6 +77,16 @@ class FilesController extends BaseController
                 'user_id' => $authorId,
                 'comment_id' => $commentModel->id,
             ]);
+
+            // Send notification
+            ProjectStatusChanged::dispatch([
+                'author' => $currentUser['name'],
+                'project' => Projects::find($project_id),
+                'old_status' => $old_status,
+                'status' => $type_status,
+                'comment' => $commentModel->comment
+            ]);
+
             if($commentModel->id != null)
             {
              
@@ -97,7 +107,6 @@ class FilesController extends BaseController
                     }     
                 }
             }
-
 
         }
 

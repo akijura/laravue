@@ -8,6 +8,7 @@ use App\Listeners\SendTelegramNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Event;
 use App\Events\ProjectCreated;
+use App\Listeners\SendTelegramNotificationSubscriber;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,10 +21,10 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+    ];
 
-        ProjectCreated::class => [
-            SendTelegramNotification::class,
-        ],
+    protected $subscribe = [
+        SendTelegramNotificationSubscriber::class,
     ];
 
     /**
