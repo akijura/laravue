@@ -6,7 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
-use App\Laravue\Models\NotificationCredential;
+
 /**
  * Class User
  *
@@ -98,10 +98,5 @@ class User extends Authenticatable
         }
 
         return false;
-    }
-
-    public function notificationCredentials()
-    {
-        return $this->hasMany(NotificationCredential::class);
     }
 }
