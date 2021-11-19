@@ -9,7 +9,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\ProjectCreated;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\ProjectResource;
@@ -193,7 +192,6 @@ class ProjectController extends BaseController
                 'status_confirm' => 1,
             ]);
 
-            ProjectCreated::dispatch($project);
             return  $comment;
         }
     }
