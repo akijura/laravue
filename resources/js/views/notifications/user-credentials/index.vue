@@ -1,11 +1,13 @@
 <template>
   <div class="app-container">
     <div v-for="(user, index) in list" :key="index">
-      <el-card class="box-card mt-4">
-        <div slot="header" class="clearfix">
-          <span icon>{{ user.name }}</span>
+      <el-card class="mt-6">
+        <div slot="header" class="flex">
+          <span style="font-weight: bold">
+            <i class="el-icon-user-solid" /> {{ user.name }}</span>
           <el-button
             style="float: right"
+            size="small"
             type="primary"
             icon="el-icon-plus"
             @click="handleCreateForm(user.id, user.name)"
@@ -38,8 +40,16 @@
             <el-table-column align="center" label="Actions" width="350">
               <template slot-scope="scope">
                 <el-button
+                  type="primary"
+                  size="mini"
+                  icon="el-icon-edit"
+                  @click="handleEditForm(scope.row.id, user.id)"
+                >
+                  Edit
+                </el-button>
+                <el-button
                   type="danger"
-                  size="small"
+                  size="mini"
                   icon="el-icon-delete"
                   @click="handleDelete(scope.row.id, scope.row.name)"
                 >
@@ -124,7 +134,6 @@ export default {
     async getList() {
       const { data } = await userCredentialResource.list({});
       this.list = data;
-      console.log(this.list);
     },
 
     async getChannels() {
@@ -133,29 +142,93 @@ export default {
     },
 
     handleSubmit() {
-      userCredentialResource
-        .store(this.currentUserCredential)
-        .then((response) => {
-          this.$message({
-            message:
-              'New user credential for ' +
-              this.currentUserName +
-              ' successfully added!',
-            type: 'success',
-            duration: 5 * 1000,
+      if (this.currentUserCredential.id !== undefined) {
+        userCredentialResource
+          .update(this.currentUserCredential.id, this.currentUserCredential)
+          .then((response) => {
+            this.$message({
+              type: 'success',
+              message: 'User credential has been updated successfully',
+              duration: 5 * 1000,
+            });
+            this.getList();
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+          .finally(() => {
+            this.userCredentialFormVisible = false;
           });
+      } else {
+        userCredentialResource
+          .store(this.currentUserCredential)
+          .then((response) => {
+            this.$message({
+              message:
+                'New user credential for ' +
+                this.currentUserName +
+                ' successfully added!',
+              type: 'success',
+              duration: 5 * 1000,
+            });
 
-          this.currentUserCredential = {
-            user_id: null,
-            channel_id: null,
-            identifier: '',
-          };
+            this.currentUserCredential = {
+              user_id: null,
+              channel_id: null,
+              identifier: '',
+            };
 
-          this.userCredentialFormVisible = false;
-          this.getList();
+            this.userCredentialFormVisible = false;
+            this.getList();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+    handleEditForm(id, user_id) {
+      const user = this.list.find((user) => user.id === user_id);
+      const credential = user.notification_credentials.find(
+        (credential) => credential.id === id
+      );
+      this.currentUserCredential = {
+        id: id,
+        channel_id: credential.channel_id,
+        identifier: credential.identifier,
+        user_id: user_id,
+      };
+      this.userCredentialFormTitle = 'Edit user credential';
+      this.userCredentialFormVisible = true;
+    },
+    handleDelete(id, name) {
+      this.$confirm(
+        'This will permanently delete notification credential. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          userCredentialResource
+            .destroy(id)
+            .then((response) => {
+              this.$message({
+                type: 'success',
+                message: 'Deletion completed',
+              });
+              this.getList();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Deletion canceled',
+          });
         });
     },
     handleCreateForm(currentUserId, currentUserName) {
@@ -174,7 +247,12 @@ export default {
 };
 </script>
 <style scoped>
-.mt-4 {
-  margin-top: 1rem;
+.mt-6 {
+  margin-top: 1.5rem;
+}
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>
