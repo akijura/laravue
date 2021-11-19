@@ -13,7 +13,7 @@
             type="primary"
             icon="el-icon-plus"
             @click="handleCreateForm(user.id, user.name)"
-            >Add new credential</el-button
+            >{{ $t('notification.addNewCredential') }}</el-button
           >
         </div>
         <div>
@@ -29,18 +29,28 @@
               </template>
             </el-table-column>
 
-            <el-table-column align="center" label="Channel name">
+            <el-table-column
+              align="center"
+              :label="$t('notification.channelName')"
+            >
               <template slot-scope="scope">
                 <span>{{ scope.row.channel.name }}</span>
               </template>
             </el-table-column>
 
-            <el-table-column align="center" label="Identifier">
+            <el-table-column
+              align="center"
+              :label="$t('notification.identifier')"
+            >
               <template slot-scope="scope">
                 <span>{{ scope.row.identifier }}</span>
               </template>
             </el-table-column>
-            <el-table-column align="center" label="Actions" width="350">
+            <el-table-column
+              align="center"
+              :label="$t('table.actions')"
+              width="350"
+            >
               <template slot-scope="scope">
                 <el-button
                   v-permission="['manage notification channels']"
@@ -49,7 +59,7 @@
                   icon="el-icon-edit"
                   @click="handleEditForm(scope.row.id, user.id)"
                 >
-                  Edit
+                  {{ $t('table.edit') }}
                 </el-button>
                 <el-button
                   v-permission="['manage notification channels']"
@@ -58,7 +68,7 @@
                   icon="el-icon-delete"
                   @click="handleDelete(scope.row.id, scope.row.name)"
                 >
-                  Delete
+                  {{ $t('table.delete') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -78,7 +88,7 @@
             label-width="150px"
             style="max-width: 400px"
           >
-            <el-form-item label="Channel">
+            <el-form-item :label="$t('notification.channelName')">
               <el-select
                 v-model="currentUserCredential.channel_id"
                 placeholder="Select"
@@ -91,7 +101,10 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="Identifier" prop="description">
+            <el-form-item
+              :label="$t('notification.identifier')"
+              prop="description"
+            >
               <el-input
                 v-model="currentUserCredential.identifier"
                 type="input"
@@ -100,10 +113,10 @@
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="userCredentialFormVisible = false">
-              Cancel
+              {{ $t('table.cancel') }}
             </el-button>
             <el-button type="primary" @click="handleSubmit()">
-              Confirm
+              {{ $t('table.confirm') }}
             </el-button>
           </div>
         </div>
@@ -155,7 +168,7 @@ export default {
           .then((response) => {
             this.$message({
               type: 'success',
-              message: 'User credential has been updated successfully',
+              message: this.$t('notification.credentialUpdated'),
               duration: 5 * 1000,
             });
             this.getList();
@@ -171,10 +184,9 @@ export default {
           .store(this.currentUserCredential)
           .then((response) => {
             this.$message({
-              message:
-                'New user credential for ' +
-                this.currentUserName +
-                ' successfully added!',
+              message: this.$t('notification.credentialAdded', {
+                userName: this.currentUserName,
+              }),
               type: 'success',
               duration: 5 * 1000,
             });
@@ -204,16 +216,16 @@ export default {
         identifier: credential.identifier,
         user_id: user_id,
       };
-      this.userCredentialFormTitle = 'Edit user credential';
+      this.userCredentialFormTitle = this.$t('notification.editCredential');
       this.userCredentialFormVisible = true;
     },
     handleDelete(id, name) {
       this.$confirm(
-        'This will permanently delete notification credential. Continue?',
-        'Warning',
+        this.$t('notification.credentialDeleteWarning'),
+        this.$t('table.warning'),
         {
           confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
+          cancelButtonText: this.$t('table.cancel'),
           type: 'warning',
         }
       )
@@ -240,8 +252,9 @@ export default {
     },
     handleCreateForm(currentUserId, currentUserName) {
       this.currentUserId = currentUserId;
-      this.userCredentialFormTitle =
-        'New user credential for ' + currentUserName;
+      this.userCredentialFormTitle = this.$t('notification.newCredential', {
+        userName: currentUserName,
+      });
       this.currentUserName = currentUserName;
       this.userCredentialFormVisible = true;
       this.currentUserCredential = {

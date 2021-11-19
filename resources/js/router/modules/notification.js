@@ -6,7 +6,7 @@ const notificationRoutes = {
   redirect: '/notification/channels',
   name: 'notification',
   meta: {
-    title: 'Notification',
+    title: 'notification',
     icon: 'guide',
     permissions: ['view menu notification channels'],
   },
@@ -15,13 +15,13 @@ const notificationRoutes = {
       path: 'channels',
       name: 'channels',
       component: () => import('@/views/notifications/channels'),
-      meta: { title: 'Channels', icon: 'international' },
+      meta: { title: 'channels', icon: 'international' },
     },
     {
       path: 'user-credentials',
-      name: 'UserCredentials',
+      name: 'userCredentials',
       component: () => import('@/views/notifications/user-credentials'),
-      meta: { title: 'User credentials', icon: 'lock' },
+      meta: { title: 'userCredentials', icon: 'lock' },
     },
   ],
 

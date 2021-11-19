@@ -25,19 +25,22 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Name">
+      <el-table-column align="center" :label="$t('notification.channelName')">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="API Link">
+      <el-table-column
+        align="center"
+        :label="$t('notification.channelApiLink')"
+      >
         <template slot-scope="scope">
           <span>{{ scope.row.api_link }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="350">
+      <el-table-column align="center" :label="$t('table.actions')" width="350">
         <template slot-scope="scope">
           <el-button
             v-permission="['manage notification channels']"
@@ -46,7 +49,7 @@
             icon="el-icon-edit"
             @click="handleEditForm(scope.row.id, scope.row.name)"
           >
-            Edit
+            {{ $t('table.edit') }}
           </el-button>
           <el-button
             v-permission="['manage notification channels']"
@@ -55,7 +58,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row.id, scope.row.name)"
           >
-            Delete
+            {{ $t('table.delete') }}
           </el-button>
         </template>
       </el-table-column>
@@ -68,19 +71,23 @@
           :model="currentChannel"
           label-position="left"
           label-width="150px"
-          style="max-width: 500px"
         >
-          <el-form-item label="Name" prop="name">
+          <el-form-item :label="$t('notification.channelName')" prop="name">
             <el-input v-model="currentChannel.name" />
           </el-form-item>
-          <el-form-item label="API Link" prop="description">
+          <el-form-item
+            :label="$t('notification.channelApiLink')"
+            prop="description"
+          >
             <el-input v-model="currentChannel.api_link" type="text" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="channelFormVisible = false"> Cancel </el-button>
+          <el-button @click="channelFormVisible = false">
+            {{ $t('table.cancel') }}
+          </el-button>
           <el-button type="primary" @click="handleSubmit()">
-            Confirm
+            {{ $t('table.confirm') }}
           </el-button>
         </div>
       </div>
@@ -121,7 +128,7 @@ export default {
           .then((response) => {
             this.$message({
               type: 'success',
-              message: 'Channel info has been updated successfully',
+              message: this.$t('notification.channelUpdated'),
               duration: 5 * 1000,
             });
 
@@ -136,23 +143,22 @@ export default {
       } else {
         channelResource.store(this.currentChannel).then((response) => {
           this.$message({
-            message: 'New channel has been created successfully',
+            message: this.$t('notification.channelCreated'),
             type: 'success',
-            duration: 5 * 1000,
+            duration: 5 * 1000
           });
 
           this.currentChannel = {
             name: '',
-            api_link: '',
+            api_link: ''
           };
-
           this.channelFormVisible = false;
           this.getList();
         });
       }
     },
     handleCreateForm() {
-      (this.formTitle = 'Create a new channel'),
+      (this.formTitle = this.$t('notification.createNewChannel')),
         (this.channelFormVisible = true);
       this.currentChannel = {
         name: '',
@@ -162,11 +168,11 @@ export default {
 
     handleDelete(id, name) {
       this.$confirm(
-        'This will permanently delete channel ' + name + '. Continue?',
-        'Warning',
+        this.$t('notification.channelDeleteWarning', { channelName: name }),
+        this.$t('table.warning'),
         {
           confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
+          cancelButtonText: this.$t('table.cancel'),
           type: 'warning',
         }
       ).then(() => {
@@ -175,7 +181,7 @@ export default {
           .then((response) => {
             this.$message({
               type: 'success',
-              message: 'Delete completed',
+              message: this.$t('notification.channelDeleted'),
             });
             this.getList();
           })
@@ -192,10 +198,10 @@ export default {
     },
 
     handleEditForm(id) {
-      this.formTitle = 'Edit channel';
+      this.formTitle = this.$t('notification.editChannel');
       this.currentChannel = this.list.find((channel) => channel.id === id);
       this.channelFormVisible = true;
     },
   },
 };
-</script> 
+</script>
