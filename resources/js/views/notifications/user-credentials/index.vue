@@ -4,14 +4,17 @@
       <el-card class="mt-6">
         <div slot="header" class="flex">
           <span style="font-weight: bold">
-            <i class="el-icon-user-solid" /> {{ user.name }}</span>
+            <i class="el-icon-user-solid" /> {{ user.name }}</span
+          >
           <el-button
+            v-permission="['manage notification channels']"
             style="float: right"
             size="small"
             type="primary"
             icon="el-icon-plus"
             @click="handleCreateForm(user.id, user.name)"
-          >Add new credential</el-button>
+            >Add new credential</el-button
+          >
         </div>
         <div>
           <el-table
@@ -40,6 +43,7 @@
             <el-table-column align="center" label="Actions" width="350">
               <template slot-scope="scope">
                 <el-button
+                  v-permission="['manage notification channels']"
                   type="primary"
                   size="mini"
                   icon="el-icon-edit"
@@ -48,6 +52,7 @@
                   Edit
                 </el-button>
                 <el-button
+                  v-permission="['manage notification channels']"
                   type="danger"
                   size="mini"
                   icon="el-icon-delete"
@@ -109,11 +114,13 @@
 
 <script>
 import Resource from '@/api/resource';
+import permission from '@/directive/permission';
 const channelResource = new Resource('channels');
 const userCredentialResource = new Resource('user-credentials');
 
 export default {
   name: 'UserCredentials',
+  directives: { permission },
   data() {
     return {
       list: [],

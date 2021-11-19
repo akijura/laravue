@@ -8,6 +8,7 @@ const notificationRoutes = {
   meta: {
     title: 'Notification',
     icon: 'guide',
+    permissions: ['view menu notification channels'],
   },
   children: [
     {

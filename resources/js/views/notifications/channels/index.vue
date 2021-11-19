@@ -2,6 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-button
+        v-permission="['manage notification channel']"
         class="filter-item"
         type="primary"
         icon="el-icon-plus"
@@ -39,6 +40,7 @@
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
           <el-button
+            v-permission="['manage notification channels']"
             type="primary"
             size="small"
             icon="el-icon-edit"
@@ -47,6 +49,7 @@
             Edit
           </el-button>
           <el-button
+            v-permission="['manage notification channels']"
             type="danger"
             size="small"
             icon="el-icon-delete"
@@ -87,10 +90,12 @@
 
 <script>
 import Resource from '@/api/resource';
+import permission from '@/directive/permission';
 const channelResource = new Resource('channels');
 
 export default {
   name: 'ChannelList',
+  directives: { permission },
   data() {
     return {
       list: [],
