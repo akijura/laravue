@@ -77,7 +77,7 @@ export default {
     projectDetail: 'Project Detail',
     notification: 'Notificaion',
     channels: 'Channels',
-    userCredentials: 'User credentials'
+    userCredentials: 'User credentials',
   },
   navbar: {
     logOut: 'Log Out',
@@ -269,13 +269,13 @@ export default {
     'channelUpdated': 'Channel has been updated successfully!',
     'channelCreated': 'New channel has been created successfully!',
     'channelDeleteWarning': (ctx) => 'This will permanently delete channel ' + ctx.named('channelName') + '. Continue?',
-    'channelDeleted': "Channel successfully deleted",
+    'channelDeleted': 'Channel successfully deleted',
     'identifier': 'Identifier',
     'addNewCredential': 'Add new credential',
     'credentialAdded': (ctx) => 'New user credential for ' + ctx.named('userName') + ' successfully added!',
     'newCredential': (ctx) => 'New user credential for ' + ctx.named('userName'),
     'editCredential': 'Edit user credential',
     'credentialUpdated': 'User credential has been updated successfully',
-    'credentialDeleteWarning': 'This will permanently delete notification credential. Continue?'
+    'credentialDeleteWarning': 'This will permanently delete notification credential. Continue?',
   },
 };

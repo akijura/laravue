@@ -4,8 +4,7 @@
       <el-card class="mt-6">
         <div slot="header" class="flex">
           <span style="font-weight: bold">
-            <i class="el-icon-user-solid" /> {{ user.name }}</span
-          >
+            <i class="el-icon-user-solid" /> {{ user.name }}</span>
           <el-button
             v-permission="['manage notification channels']"
             style="float: right"
@@ -13,8 +12,7 @@
             type="primary"
             icon="el-icon-plus"
             @click="handleCreateForm(user.id, user.name)"
-            >{{ $t('notification.addNewCredential') }}</el-button
-          >
+          >{{ $t('notification.addNewCredential') }}</el-button>
         </div>
         <div>
           <el-table

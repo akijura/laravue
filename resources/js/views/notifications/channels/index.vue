@@ -145,12 +145,12 @@ export default {
           this.$message({
             message: this.$t('notification.channelCreated'),
             type: 'success',
-            duration: 5 * 1000
+            duration: 5 * 1000,
           });
 
           this.currentChannel = {
             name: '',
-            api_link: ''
+            api_link: '',
           };
           this.channelFormVisible = false;
           this.getList();
@@ -159,7 +159,7 @@ export default {
     },
     handleCreateForm() {
       (this.formTitle = this.$t('notification.createNewChannel')),
-        (this.channelFormVisible = true);
+      (this.channelFormVisible = true);
       this.currentChannel = {
         name: '',
         api_link: '',

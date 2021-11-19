@@ -269,13 +269,13 @@ export default {
     'channelUpdated': 'Канал успешно обновлен!',
     'channelCreated': 'Новый канал успешно создан!',
     'channelDeleteWarning': (ctx) => 'Это приведет к безвозвратному удалению канала ' + ctx.named('channelName') + '. Продолжать?',
-    'channelDeleted': "Канал успешно удален",
+    'channelDeleted': 'Канал успешно удален',
     'identifier': 'Идентификатор',
     'addNewCredential': 'Новый идентификатор',
-    'credentialAdded': (ctx) =>  'Новые учетные данные пользователя '+  ctx.named('userName') +' успешно добавлены!',
+    'credentialAdded': (ctx) => 'Новые учетные данные пользователя ' + ctx.named('userName') + ' успешно добавлены!',
     'newCredential': (ctx) => 'Новые учетные данные для ' + ctx.named('userName'),
     'editCredential': 'Изменить учетные данные пользователя',
     'credentialUpdated': 'Учетные данные пользователя успешно обновлены',
-    'credentialDeleteWarning': 'Это приведет к безвозвратному удалению учетных данных для уведомлений. Продолжать?'
+    'credentialDeleteWarning': 'Это приведет к безвозвратному удалению учетных данных для уведомлений. Продолжать?',
   },
 };
