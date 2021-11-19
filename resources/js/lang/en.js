@@ -75,6 +75,9 @@ export default {
     users: 'Users',
     userProfile: 'User Profile',
     projectDetail: 'Project Detail',
+    notification: 'Notificaion',
+    channels: 'Channels',
+    userCredentials: 'User credentials'
   },
   navbar: {
     logOut: 'Log Out',
@@ -151,6 +154,7 @@ export default {
     confirm: 'Confirm',
     keyword: 'Keyword',
     role: 'Role',
+    warning: 'Warning',
   },
   errorLog: {
     tips: 'Please click the bug icon in the upper right corner',
@@ -256,5 +260,22 @@ export default {
     'confirmed': 'Confirmed',
     'not_confirmed': 'Not confirmed',
 
+  },
+  notification: {
+    'channelName': 'Name',
+    'channelApiLink': 'API Link',
+    'createNewChannel': 'Create a new channel',
+    'editChannel': 'Edit channel',
+    'channelUpdated': 'Channel has been updated successfully!',
+    'channelCreated': 'New channel has been created successfully!',
+    'channelDeleteWarning': (ctx) => 'This will permanently delete channel ' + ctx.named('channelName') + '. Continue?',
+    'channelDeleted': "Channel successfully deleted",
+    'identifier': 'Identifier',
+    'addNewCredential': 'Add new credential',
+    'credentialAdded': (ctx) => 'New user credential for ' + ctx.named('userName') + ' successfully added!',
+    'newCredential': (ctx) => 'New user credential for ' + ctx.named('userName'),
+    'editCredential': 'Edit user credential',
+    'credentialUpdated': 'User credential has been updated successfully',
+    'credentialDeleteWarning': 'This will permanently delete notification credential. Continue?'
   },
 };

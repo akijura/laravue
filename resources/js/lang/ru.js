@@ -75,6 +75,9 @@ export default {
     users: 'Пользователи',
     userProfile: 'Профиль пользователя',
     projectDetail: 'Детали проекта',
+    notification: 'Уведомление',
+    channels: 'Каналы',
+    userCredentials: 'Идентификаторы',
   },
   navbar: {
     logOut: 'Выход',
@@ -151,6 +154,7 @@ export default {
     confirm: 'Подтвердить',
     keyword: 'Ключевое слово',
     role: 'Роль',
+    warning: 'Предупреждение',
   },
   errorLog: {
     tips: 'Пожалуйста, нажмите на иконку "бага" в правом верхнем углу',
@@ -255,5 +259,23 @@ export default {
     'up': 'вверх',
     'confirmed': 'Подтверждено',
     'not_confirmed': 'Не подтверждено',
+  },
+
+  notification: {
+    'channelName': 'Название канала',
+    'channelApiLink': 'Ссылка на API',
+    'createNewChannel': 'Создать новый канал',
+    'editChannel': 'Изменить канал',
+    'channelUpdated': 'Канал успешно обновлен!',
+    'channelCreated': 'Новый канал успешно создан!',
+    'channelDeleteWarning': (ctx) => 'Это приведет к безвозвратному удалению канала ' + ctx.named('channelName') + '. Продолжать?',
+    'channelDeleted': "Канал успешно удален",
+    'identifier': 'Идентификатор',
+    'addNewCredential': 'Новый идентификатор',
+    'credentialAdded': (ctx) =>  'Новые учетные данные пользователя '+  ctx.named('userName') +' успешно добавлены!',
+    'newCredential': (ctx) => 'Новые учетные данные для ' + ctx.named('userName'),
+    'editCredential': 'Изменить учетные данные пользователя',
+    'credentialUpdated': 'Учетные данные пользователя успешно обновлены',
+    'credentialDeleteWarning': 'Это приведет к безвозвратному удалению учетных данных для уведомлений. Продолжать?'
   },
 };

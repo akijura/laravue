@@ -29,6 +29,8 @@ Route::namespace('Api')->group(function() {
     Route::get('/statusConfirm/{id}', 'ProjectReportController@statusConfirm');
     Route::post('/user/update', 'UserController@updateuser');
     Route::get('userroles', 'UserController@userroles');
+    Route::apiResource('channels','NotificationChannelController')->middleware("permission:manage notification channels|view notification channels");
+    Route::apiResource('user-credentials', 'NotificationCredentialController');
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
         Route::get('auth/user', 'AuthController@user');
