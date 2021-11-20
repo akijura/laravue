@@ -75,9 +75,6 @@ export default {
     users: 'Пользователи',
     userProfile: 'Профиль пользователя',
     projectDetail: 'Детали проекта',
-    notification: 'Уведомление',
-    channels: 'Каналы',
-    userCredentials: 'Идентификаторы',
   },
   navbar: {
     logOut: 'Выход',
@@ -154,7 +151,6 @@ export default {
     confirm: 'Подтвердить',
     keyword: 'Ключевое слово',
     role: 'Роль',
-    warning: 'Предупреждение',
   },
   errorLog: {
     tips: 'Пожалуйста, нажмите на иконку "бага" в правом верхнем углу',
