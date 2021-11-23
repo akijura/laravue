@@ -127,14 +127,7 @@ export default {
   name: 'DropzoneDemo',
   // name: 'BackToTopDemo',
   // name: 'EditorSlideUpload',
-  components: { Dropzone,UserBio ,BackToTop},
-    mounted() {
-        this.$root.$on('UserActivity',() =>{
-           this.getListProject();
-            this.getComments();
-          
-        })
-      },
+  components: { Dropzone, UserBio, BackToTop },
   props: {
     color: {
       type: String,
@@ -207,6 +200,12 @@ export default {
       ],
       updating: false,
     };
+  },
+  mounted() {
+    this.$root.$on('UserActivity', () => {
+      this.getListProject();
+      this.getComments();
+    });
   },
   created() {
     this.getListProject();

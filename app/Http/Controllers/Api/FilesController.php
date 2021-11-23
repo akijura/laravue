@@ -60,42 +60,60 @@ class FilesController extends BaseController
         $status_id = $request->get('status_id');
         if($project_id != null && $comment != null && $status_id != null)
         {
-            $type_status = Status::find($status_id);
-            $project = Projects::where('id', $project_id)
-            ->update(['type_status' => $status_id, 'basic_status' => $type_status->basic_status]);
-            
-            $currentUser = Auth::user();
-            $authorId = $currentUser['id'];
-            $commentModel = ProjectComments::create([
-                'project_id' => $project_id,
-                'comment' => $comment,
-                'user_id' => $authorId,
-            ]);
-            $projectReport = ProjectReport::create([
-                'project_id' =>  $project_id,
-                'type_status' =>  $status_id,
-                'user_id' => $authorId,
-                'comment_id' => $commentModel->id,
-            ]);
-            if($commentModel->id != null)
+            $check_confirm_status = Projects::find($project_id);
+            if($check_confirm_status->status_confirm === 1)
             {
-             
-                if($request->hasFile('files')){
-                    $pictures = [];
-                    foreach($request->file('files') as $file)
-                    {
-                        $tempname = $file->getClientOriginalName();
-                        $filename = date('m-d-Y H-i-s')." ".$tempname;
-                        $filesModel = Files::create([
-                            'name' => $filename,
-                            'project_id' => $project_id,
-                            'comment_id' => $commentModel->id,
-                            'author' => $authorId,
-                        ]);
-                        $file->move(public_path('upload'),$filename);
-                      
-                    }     
+                $currentUser = Auth::user();
+                $current = $currentUser->roles[0]['name'];
+                if($current === 'admin' || $current === 'moderator')
+                {
+                    $status_confirm = 1;
                 }
+                else {
+                    $status_confirm = 0; 
+                }
+                $type_status = Status::find($status_id);
+                $project = Projects::where('id', $project_id)
+                ->update(['type_status' => $status_id, 'basic_status' => $type_status->basic_status,'status_confirm' => $status_confirm]);
+                
+                $currentUser = Auth::user();
+                $authorId = $currentUser['id'];
+                $commentModel = ProjectComments::create([
+                    'project_id' => $project_id,
+                    'comment' => $comment,
+                    'user_id' => $authorId,
+                ]);
+                $projectReport = ProjectReport::create([
+                    'project_id' =>  $project_id,
+                    'type_status' =>  $status_id,
+                    'user_id' => $authorId,
+                    'comment_id' => $commentModel->id,
+                    'status_confirm' => $status_confirm
+                ]);
+                if($commentModel->id != null)
+                {
+                 
+                    if($request->hasFile('files')){
+                        $pictures = [];
+                        foreach($request->file('files') as $file)
+                        {
+                            $tempname = $file->getClientOriginalName();
+                            $filename = date('m-d-Y H-i-s')." ".$tempname;
+                            $filesModel = Files::create([
+                                'name' => $filename,
+                                'project_id' => $project_id,
+                                'comment_id' => $commentModel->id,
+                                'author' => $authorId,
+                            ]);
+                            $file->move(public_path('upload'),$filename);
+                          
+                        }     
+                    }
+                }
+                return response()->json(new JsonResponse($commentModel));
+            }
+            else {
+                return response()->json(['errors' => 'Last status must be confirmed by moderator or admin'], 403);
             }
 
 
@@ -103,31 +121,6 @@ class FilesController extends BaseController
 
    
         
-           
-        
-        // if($request->hasFile('file')){
-        //     $files = $request->all(); // will get all files
-
-        //     foreach ($files as $file) {//this statement will loop through all files.
-        //         $file_name = $file->getClientOriginalName(); //Get file original name
-        //         $file->move('/upload' , $file_name); // move files to destination folder
-        //     }
-        // }
-     
-       // $params = $request->all();
-        // $files  = $request->get('files');
-      //  $files = $request->file();
-            /// $name = time(). $params[0]->filename;
-          // $params[0]->move('/upload','aki');
-        // foreach ($files as $file) {
-        //    // $name = time(). $file['upload']->filename;
-        //    $file->move('/upload','aki');
-        //     // Photo::create([
-        //     //     'name'=>$name,
-        //     //     'user_id'=>auth()->user()->id
-        //     // ]);
-        // }
-        return response()->json(new JsonResponse($commentModel));
     }
 
     /**
