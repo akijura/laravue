@@ -297,6 +297,27 @@ class ProjectController extends BaseController
         return response()->json(new JsonResponse(['params' => $params]));  
     }
 
+    public function confirmStatus($project_id,$id)
+    {
+        $currentUser = Auth::user();
+        $current = $currentUser->roles[0]['name'];
+        if($current === 'admin' || $current === 'moderator')
+        {
+            $project = Projects::find($project_id);
+            $project->status_confirm = 1;
+            $project->update();
+            $projectReport = ProjectReport::find($id);
+            $projectReport->status_confirm = 1;
+            $projectReport->update();
+            return $id;
+        }
+        else {
+            return response()->json(['error' => 'Permission denied'], 403);
+        }
+
+       
+    }
+
     /**
      * Update the specified resource in storage.
      *

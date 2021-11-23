@@ -34,6 +34,7 @@ export default {
   },
   created() {
     this.getAuthor();
+       console.log(this.$root);
   },
   methods: {
     async getAuthor() {

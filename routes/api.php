@@ -23,6 +23,7 @@ Route::namespace('Api')->group(function() {
     Route::get('/projectLevelList', 'ProjectController@projectLevelList');
     Route::get('/getProjectAuth/{project_id}', 'ProjectController@getProjectAuth');
     Route::get('/getProMembers/{project_id}', 'ProjectController@getProjectMembers');
+    Route::get('/confirmStatus/{project_id}/{status_id}', 'ProjectController@confirmStatus');
     Route::get('/downloadFile/{file_name}', 'FilesController@downloadFile')->name('downloadFile');
     Route::post('/project/addMember', 'ProjectController@addProjectMember');
     Route::get('/user/{id}', 'UserController@edit');

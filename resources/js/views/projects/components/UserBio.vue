@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card user-bio">
+  <el-card class="box-card user-bio" ref="UserBio">
     <div slot="header" class="clearfix">
       <span>{{ $t('projects.about') }}</span>
     </div>
@@ -51,7 +51,7 @@
             <el-table-column align="center" width="145" class="text-center">
               <template slot-scope="scope">
 
-                <el-button :disabled="scope.row.isActive" size="small" :type="scope.row.status_confirm | statusFilter">
+                <el-button :disabled="scope.row.isActive" size="small" :type="scope.row.status_confirm | statusFilter" @click="handleStatusConfirm(scope.row.project_id,scope.row.status_name,scope.row.id)" >
                   {{ $t('projects.' + scope.row.text_confirm) }}
                 </el-button>
               </template>
@@ -66,12 +66,21 @@
 <script>
 import ProjectResource from '@/api/project';
 import ProjectReportResource from '@/api/projectReport';
-import { updateStatusConfirm } from '@/api/projectReport';
+import UserActivity from './UserActivity';
+import { confirmStatus } from '@/api/project';
 
 const projectResource = new ProjectResource();
 const projectReportResource = new ProjectReportResource();
 
 export default {
+    components: { UserActivity },
+      mounted() {
+        this.$root.$on('UserBio',() =>{
+          this.getProjectReport();
+          this.getListProject();
+          
+        })
+      },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -99,6 +108,7 @@ export default {
   created() {
     this.getListProject();
     this.getProjectReport();
+
   },
   methods: {
     async getListProject(){
@@ -113,27 +123,31 @@ export default {
       this.percent = Number(this.projectDetails.percent);
       this.loading = false;
     },
-    handleStatusConfirm(id, name) {
+    handleStatusConfirm(project_id, name,status_id) {
       this.$confirm('This will permanently confirm status ' + name + '. Continue?', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning',
       }).then(() => {
-        userResource.destroy(id).then(response => {
+        confirmStatus(project_id,status_id).then(response => {
+          console.log(response);
           this.$message({
             type: 'success',
-            message: 'Delete completed',
+            message: 'Confirmation completed',
           });
-          this.handleFilter();
         }).catch(error => {
           console.log(error);
         });
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: 'Delete canceled',
+          message: 'Confirmation canceled',
         });
-      });
+      }).finally(() => {  
+          this.$root.$emit('UserActivity');
+          this.getListProject();
+          this.getProjectReport();
+       });
     },
     async getProjectReport(){
       this.loading = true;

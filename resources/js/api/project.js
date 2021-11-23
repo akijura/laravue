@@ -23,6 +23,12 @@ export function getProjectMembers(project_id) {
     method: 'get',
   });
 }
+export function confirmStatus(project_id,status_id) {
+  return request({
+    url: '/confirmStatus/' + project_id + '/' + status_id,
+    method: 'get',
+  });
+}
 export function addProjectMember(data) {
   return request({
     url: '/project/addMember',

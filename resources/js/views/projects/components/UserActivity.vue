@@ -113,6 +113,7 @@ import ProjectResource from '@/api/project';
 import CommentsResource from '@/api/comments';
 import StatusResource from '@/api/status';
 import Dropzone from '@/components/Dropzone';
+import UserBio from './UserBio';
 import FilesResource from '@/api/files';
 import { downloadFile } from '@/api/files';
 import BackToTop from '@/components/BackToTop';
@@ -124,10 +125,16 @@ const filesResource = new FilesResource();
 
 export default {
   name: 'DropzoneDemo',
-  name: 'BackToTopDemo',
-  name: 'EditorSlideUpload',
-  components: { Dropzone },
-  components: { BackToTop },
+  // name: 'BackToTopDemo',
+  // name: 'EditorSlideUpload',
+  components: { Dropzone,UserBio ,BackToTop},
+    mounted() {
+        this.$root.$on('UserActivity',() =>{
+           this.getListProject();
+            this.getComments();
+          
+        })
+      },
   props: {
     color: {
       type: String,
@@ -237,8 +244,9 @@ export default {
               console.log(error);
             })
             .finally(() => {
-              this.getListProject();
               this.getComments();
+              this.$root.$emit('UserBio');
+              this.getListProject();
               this.updateStatusForm.files = [];
               this.updateStatusForm.comment = '';
               this.dialogFormVisible = false;

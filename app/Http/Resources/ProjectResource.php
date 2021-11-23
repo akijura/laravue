@@ -8,6 +8,7 @@ use App\Laravue\Models\MainStatus;
 use App\Laravue\Models\User;
 use App\Laravue\Models\BasicStatus;
 use App\Laravue\Models\ProjectLevel;
+use App\Laravue\Models\ProjectReport;
 
 class ProjectResource extends JsonResource
 {
@@ -19,13 +20,23 @@ class ProjectResource extends JsonResource
      */
     public function toArray($request)
     {
+        if($this->status_confirm != 1)
+        {
+            $status_type = ProjectReport::where([
+                ['project_id','=',$this->id],
+                ['status_confirm','=', 1]
+            ])->latest()->first();
+            $this->type_status = $status_type->type_status;
+            $basic_status = Status::find($this->type_status);
+            $this->basic_status =  $basic_status->basic_status;
+        }
         $status_name = Status::find($this->type_status);
         $basic_status_name = BasicStatus::find($this->basic_status);
         $main_status_name = MainStatus::find($this->main_status_id);
         $user = User::find($this->author_id);
         $level = ProjectLevel::find($this->project_level);
-
-     
+        
+        
 
         $from = strtotime($this->begin_date);
         $to = strtotime($this->end_date);
