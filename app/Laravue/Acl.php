@@ -19,10 +19,9 @@ use Illuminate\Support\Str;
 final class Acl
 {
     const ROLE_ADMIN = 'admin';
-    const ROLE_MANAGER = 'manager';
-    const ROLE_EDITOR = 'editor';
+    const ROLE_MODERATOR = 'moderator';
     const ROLE_USER = 'user';
-    const ROLE_VISITOR = 'visitor';
+
 
     const PERMISSION_VIEW_MENU_ELEMENT_UI = 'view menu element ui';
     const PERMISSION_VIEW_MENU_PERMISSION = 'view menu permission';
@@ -44,9 +43,11 @@ final class Acl
     const PERMISSION_USER_MANAGE = 'manage user';
     const PERMISSION_ARTICLE_MANAGE = 'manage article';
     const PERMISSION_PERMISSION_MANAGE = 'manage permission';
+    const PERMISSION_VIEW_MENU_PROJECTS= 'view menu projects';
 
     //new manage permissions
     const PERMISSION_STATUS_MANAGE = 'manage status';
+
 
     /**
      * @param array $exclusives Exclude some permissions from the list

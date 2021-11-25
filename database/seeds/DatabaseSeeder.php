@@ -21,24 +21,15 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@hamkorbank.uz',
             'password' => Hash::make('akki9696'),
         ]);
-        $manager = User::create([
-            'name' => 'Manager',
-            'email' => 'manager@laravue.dev',
+        $moderator = User::create([
+            'name' => 'Moderator',
+            'email' => 'moderator@laravue.dev',
             'password' => Hash::make('laravue'),
         ]);
-        $editor = User::create([
-            'name' => 'Editor',
-            'email' => 'editor@laravue.dev',
-            'password' => Hash::make('laravue'),
-        ]);
+
         $user = User::create([
             'name' => 'User',
             'email' => 'user@laravue.dev',
-            'password' => Hash::make('laravue'),
-        ]);
-        $visitor = User::create([
-            'name' => 'Visitor',
-            'email' => 'visitor@laravue.dev',
             'password' => Hash::make('laravue'),
         ]);
         $todo = BasicStatus::create([
@@ -74,9 +65,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Project level is high',
         ]);
         $adminRole = Role::findByName(\App\Laravue\Acl::ROLE_ADMIN);
-        $managerRole = Role::findByName(\App\Laravue\Acl::ROLE_MANAGER);
+        $moderatorRole = Role::findByName(\App\Laravue\Acl::ROLE_MODERATOR);
         $admin->syncRoles($adminRole);
-        $manager->syncRoles($managerRole);
+        $moderator->syncRoles($moderatorRole);
       
     }
 }

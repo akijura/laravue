@@ -21,10 +21,8 @@ class SetupRolePermissions extends Migration
         }
 
         $adminRole = Role::findByName(Acl::ROLE_ADMIN);
-        $managerRole = Role::findByName(Acl::ROLE_MANAGER);
-        $editorRole = Role::findByName(Acl::ROLE_EDITOR);
+        $moderatorRole = Role::findByName(Acl::ROLE_MODERATOR);
         $userRole = Role::findByName(Acl::ROLE_USER);
-        $visitorRole = Role::findByName(Acl::ROLE_VISITOR);
 
         foreach (Acl::permissions() as $permission) {
             Permission::findOrCreate($permission, 'api');
@@ -32,17 +30,12 @@ class SetupRolePermissions extends Migration
 
         // Setup basic permission
         $adminRole->givePermissionTo(Acl::permissions());
-        $managerRole->givePermissionTo(Acl::permissions([Acl::PERMISSION_PERMISSION_MANAGE]));
-        $editorRole->givePermissionTo(Acl::menuPermissions());
-        $editorRole->givePermissionTo(Acl::PERMISSION_ARTICLE_MANAGE);
+        $moderatorRole->givePermissionTo(Acl::permissions([Acl::PERMISSION_PERMISSION_MANAGE]));
         $userRole->givePermissionTo([
             Acl::PERMISSION_VIEW_MENU_ELEMENT_UI,
             Acl::PERMISSION_VIEW_MENU_PERMISSION,
         ]);
-        $visitorRole->givePermissionTo([
-            Acl::PERMISSION_VIEW_MENU_ELEMENT_UI,
-            Acl::PERMISSION_VIEW_MENU_PERMISSION,
-        ]);
+
 
         foreach (Acl::roles() as $role) {
             /** @var \App\User[] $users */

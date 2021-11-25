@@ -20,10 +20,8 @@ class UsersTableSeeder extends Seeder
         foreach ($userList as $fullName) {
             $name = str_replace(' ', '.', $fullName);
             $roleName = \App\Laravue\Faker::randomInArray([
-                Acl::ROLE_MANAGER,
-                Acl::ROLE_EDITOR,
+                Acl::ROLE_MODERATOR,
                 Acl::ROLE_USER,
-                Acl::ROLE_VISITOR,
             ]);
             $user = \App\Laravue\Models\User::create([
                 'name' => $fullName,
