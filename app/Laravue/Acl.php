@@ -44,9 +44,11 @@ final class Acl
     const PERMISSION_ARTICLE_MANAGE = 'manage article';
     const PERMISSION_PERMISSION_MANAGE = 'manage permission';
     const PERMISSION_VIEW_MENU_PROJECTS= 'view menu projects';
+    const PERMISSION_VIEW_NOTIFICATION_CHANNELS= 'view notification channels';
 
     //new manage permissions
     const PERMISSION_STATUS_MANAGE = 'manage status';
+    const PERMISSION_MANAGE_NOTIFICATION_CHANNELS = 'manage notification channels';
 
 
     /**

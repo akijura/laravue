@@ -74,7 +74,7 @@ class FilesController extends BaseController
                 $type_status = Status::find($status_id);
                 $project = Projects::where('id', $project_id)->get()[0];
                 $old_status = Status::find($project->type_status);
-                $project->update(['type_status' => $status_id, 'basic_status' => $type_status->basic_status]);
+                $project->update(['type_status' => $status_id, 'basic_status' => $type_status->basic_status,'status_confirm' => $status_confirm]);
                 
                 $currentUser = Auth::user();
                 $authorId = $currentUser['id'];
@@ -88,8 +88,9 @@ class FilesController extends BaseController
                     'type_status' =>  $status_id,
                     'user_id' => $authorId,
                     'comment_id' => $commentModel->id,
+                    'status_confirm' => $status_confirm
                 ]);
-    
+                
                 // Send notification
                 ProjectStatusChanged::dispatch([
                     'author' => $currentUser['name'],
@@ -98,36 +99,6 @@ class FilesController extends BaseController
                     'status' => $type_status,
                     'comment' => $commentModel->comment
                 ]);
-    
-                if($commentModel->id != null)
-                {
-                    $currentUser = Auth::user();
-                    $current = $currentUser->roles[0]['name'];
-                    if($current === 'admin' || $current === 'moderator')
-                    {
-                        $status_confirm = 1;
-                    }
-                    else {
-                        $status_confirm = 0; 
-                    }
-                    $type_status = Status::find($status_id);
-                    $project = Projects::where('id', $project_id)
-                    ->update(['type_status' => $status_id, 'basic_status' => $type_status->basic_status,'status_confirm' => $status_confirm]);
-                    
-                    $currentUser = Auth::user();
-                    $authorId = $currentUser['id'];
-                    $commentModel = ProjectComments::create([
-                        'project_id' => $project_id,
-                        'comment' => $comment,
-                        'user_id' => $authorId,
-                    ]);
-                    $projectReport = ProjectReport::create([
-                        'project_id' =>  $project_id,
-                        'type_status' =>  $status_id,
-                        'user_id' => $authorId,
-                        'comment_id' => $commentModel->id,
-                        'status_confirm' => $status_confirm
-                    ]);
                     if($commentModel->id != null)
                     {
                      
@@ -149,7 +120,7 @@ class FilesController extends BaseController
                         }
                     }
                     return response()->json(new JsonResponse($commentModel));
-                }
+                
 
     
             }
